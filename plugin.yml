@@ -1,0 +1,10 @@
+name: LyTreeHelper
+main: net.darklikally.LyTreeHelper.LyTreeHelperPlugin
+version: 2.2RC2
+commands:
+    lytree:
+        description: Generates a tree near your position.
+        usage: /<command> <tree|bigtree|birch|redwood|tallredwood|randomredwood|random>
+    lyforest:
+        description: Generates a forest in the specified radius around your position.
+        usage: /<command> <radius> <normal|redwood|mixed> (density)

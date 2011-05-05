@@ -1,0 +1,89 @@
+#
+# LyTreeHelper's configuration file
+#
+# About editing this file:
+# - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If
+#   you use an editor like Notepad++ (recommended for Windows users), you
+#   must configure it to "replace tabs with spaces." In Notepad++, this can
+#   be changed in Settings > Preferences > Language Menu.
+# - Don't get rid of the indents. They are indented so some entries are
+#   in categories.
+# - Lines starting with # are commentsand so they are ignored.
+#
+
+# Should LyTreeHelper show the config for this world if the world is loading?
+show-config-on-start: on
+
+# Should LyTreeHelper use the Permissions plugin?
+use-permissions: on
+
+# Enables or disables the normal leaves decay in minecraft.
+enable-leaves-decay: on
+# Enables or diables faster decay of leaves.
+enable-faster-decay: off
+
+# Let you destroy more leave-blocks at once.
+enable-faster-leave-destruction: off
+# Enables or disables the full destruction of trees.
+enable-full-tree-destruction: on
+# Enables or disables the full destruction of the tree wood.
+enable-full-wood-destruction: on
+
+# Leaveblocks drops their items only if the player harvests the tree from top to bottom
+# That means, the block above the harvested block must be air
+enable-only-top-down-drops: off
+
+# WARNING! Setting this option to on will enable a maximum tree size of 6000 instead of 1800.
+# WARNING! If your craftbukkit setup isn't running with enough RAM for this option, it will
+# WARNING! cuase many errors and force an server restart!
+# WARNING! This option is only for experienced users!
+enable-high-stack-size: off
+
+# Sets the maximum tree size. can be an integer from 0 to 1800.
+max-tree-size: 1600
+
+# The max. radius which can a tree have. This makes it possible to chop single trees in forests.
+# Set the max. tree radius to 0 to enable an endless radius.
+# This setting can be an integer from 0 to 50.
+max-tree-radius: 5
+
+# NOTE: The following 2 settings are not working at the moment!
+# This option works only if both "enable-full-tree-destruction" and "enable-full-wood-destruction" are set to on/true.
+# If you destroy a tree, one creature in this list will spawn at the location of the destroyed tree.
+# Possible items for the list are:
+# CREEPER, SKELETON, ZOMBIE, PIG_ZOMBIE, GHAST, SPIDER, PIG, CHICKEN, COW, SHEEP
+# Example list: creatures-to-spawn-in-trees: [PIG,COW,SPIDER]
+# If you want to change the chance of spawning a creature, use the "creature-spawn-chance" option below.
+# "creature-spawn-chance" must be a double from 0.0 to 100.0 
+creatures-to-spawn-in-trees: []
+creature-spawn-chance: 50.0
+
+# Lists below this comment may match this example:
+# full-destruction-tools: [283,284,285,286]
+# An empty list means, that all tools can be used.
+
+# Tools which can be used for full destruction of trees.
+full-destruction-tools: []
+
+# Tools which can be used to harvest leave-blocks and apples.
+harvest-tools: []
+
+# The following options can be a decimal number from 0.0 to 100.0
+# Use this settings to modify the drop chance of apples, golden apples, leave blocks and saplings. 
+apple-drop-chance: 1.0
+golden-apple-drop-chance: 0.1
+leaves-block-drop-chance: 5.0
+sapling-drop-chance: 8.0
+
+# Custom Drops
+# Custom drops must match the following mask
+#     "itemId": dropChance
+#
+# itemId is the id of the item which should be dropped.
+# dropChance can be a decimal number from 0.0 to 100.0
+#
+# Example:
+# custom-drops:
+#     "2": 10.0
+#     "3": 38.2
+custom-drops:

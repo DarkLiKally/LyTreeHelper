@@ -8,7 +8,7 @@
 #   be changed in Settings > Preferences > Language Menu.
 # - Don't get rid of the indents. They are indented so some entries are
 #   in categories.
-# - Lines starting with # are commentsand so they are ignored.
+# - Lines starting with # are comments and so they are ignored.
 #
 
 # Should LyTreeHelper show the config for this world if the world is loading?
@@ -19,7 +19,7 @@ use-permissions: on
 
 # Enables or disables the normal leaves decay in minecraft.
 enable-leaves-decay: on
-# Enables or diables faster decay of leaves.
+# Enables or disables faster decay of leaves.
 enable-faster-decay: off
 
 # Let you destroy more leave-blocks at once.
@@ -35,7 +35,7 @@ enable-only-top-down-drops: off
 
 # WARNING! Setting this option to on will enable a maximum tree size of 6000 instead of 1800.
 # WARNING! If your craftbukkit setup isn't running with enough RAM for this option, it will
-# WARNING! cuase many errors and force an server restart!
+# WARNING! cause many errors and force an server restart!
 # WARNING! This option is only for experienced users!
 enable-high-stack-size: off
 

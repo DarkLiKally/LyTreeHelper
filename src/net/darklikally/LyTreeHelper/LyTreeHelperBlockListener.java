@@ -368,7 +368,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
             block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, 1));
         }
         if (rand >= (10000.0 - (worldConfig.getSaplingChance() * 100.0))) {
-            block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.SAPLING, 1));
+        	block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.SAPLING, 1, (short)0, (byte)(block.getData() & ~0x8)));
         }
 
         Iterator<Map.Entry<String,Double>> iterator = worldConfig.getCustomDrops().entrySet().iterator();

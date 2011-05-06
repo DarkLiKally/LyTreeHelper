@@ -86,4 +86,5 @@ sapling-drop-chance: 8.0
 # custom-drops:
 #     "2": 10.0
 #     "3": 38.2
+#     "35,14": 5.0 //Red wool
 custom-drops:

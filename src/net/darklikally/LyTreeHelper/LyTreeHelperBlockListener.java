@@ -375,8 +375,14 @@ public class LyTreeHelperBlockListener extends BlockListener {
         while (iterator.hasNext()) {
             Map.Entry<String,Double> pair = (Map.Entry<String,Double>)iterator.next();
             if (rand >= (10000.0 - (pair.getValue() * 100.0))) {
-                block.getWorld().dropItemNaturally(block.getLocation(),
-                        new ItemStack(Material.getMaterial(Integer.parseInt(pair.getKey())), 1));
+            	//Split the value from the metadata
+        		String customDrop[] = pair.getKey().split(",");
+        		ItemStack custDropItem = new ItemStack(Material.getMaterial(Integer.parseInt(customDrop[0])), 1);
+        		//If we have Metadata, set it.
+        		if(customDrop.length > 1) {
+            		custDropItem.setDurability(Short.parseShort(customDrop[1]));
+        		}
+        		block.getWorld().dropItemNaturally(block.getLocation(), custDropItem);
             }
         }
     }

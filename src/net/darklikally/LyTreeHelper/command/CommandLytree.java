@@ -23,6 +23,7 @@ import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
 import net.darklikally.LyTreeHelper.LyTreeHelperConfiguration;
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
+import net.darklikally.minecraft.utils.TargetBlock;
 import net.darklikally.minecraft.utils.TreeGenerator;
 import net.darklikally.minecraft.utils.TreeGenerator.TreeType;
 
@@ -53,9 +54,11 @@ public class CommandLytree extends LyTreeHelperCommand {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
             return true;
         }
-        Location loc = player.getLocation();
 
-        loc.setX(loc.getBlockX() + 3);
+        int[] ignoreBlockIds = {8, 9};
+        Location loc = new TargetBlock(player, 300, 0.2, ignoreBlockIds).getTargetBlock().getLocation(); //player.getLocation();
+
+        //loc.setX(loc.getBlockX() + 3);
 
         String typeName = args[0];
         TreeType type = null;

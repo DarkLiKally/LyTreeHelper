@@ -238,6 +238,10 @@ public class LyTreeHelperBlockListener extends BlockListener {
 
     @Override
     public void onLeavesDecay(LeavesDecayEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
+
         LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(event.getBlock().getWorld().getName());
 
         if (worldConfig.isDestroyAll() && !worldConfig.isDecay()) {
@@ -348,10 +352,8 @@ public class LyTreeHelperBlockListener extends BlockListener {
         if(worldConfig.isOnlyTopDown()) {
             if(worldConfig.isDestroyAll() && !isGroundConnection(block)) {
                 return;
-            } else {
-                if(block.getFace(BlockFace.UP).getType() != Material.AIR) {
-                    return;
-                }
+            } else if(block.getFace(BlockFace.UP).getType() != Material.AIR) {
+                return;
             }
         }
 
@@ -365,7 +367,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
             block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.GOLDEN_APPLE, 1));
         }
         if (rand >= (10000.0 - (worldConfig.getLeavesChance() * 100.0))) {
-            block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, 1));
+            block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, 1, (short)0, (byte)(block.getData() & ~0x8)));
         }
         if (rand >= (10000.0 - (worldConfig.getSaplingChance() * 100.0))) {
         	block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.SAPLING, 1, (short)0, (byte)(block.getData() & ~0x8)));

@@ -51,6 +51,7 @@ public class LyTreeHelperCommands implements CommandExecutor {
 
         this.commands.put("lytree", new CommandLytree());
         this.commands.put("lyforest", new CommandLyforest());
+        this.commands.put("lynursery", new CommandLynursery());
     }
 
     public void registerCommands() {

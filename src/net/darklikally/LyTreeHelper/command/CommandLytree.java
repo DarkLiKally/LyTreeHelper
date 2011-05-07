@@ -19,6 +19,9 @@
 
 package net.darklikally.LyTreeHelper.command;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
 import net.darklikally.LyTreeHelper.LyTreeHelperConfiguration;
@@ -57,6 +60,7 @@ public class CommandLytree extends LyTreeHelperCommand {
 
         int[] ignoreBlockIds = {8, 9};
         Location loc = new TargetBlock(player, 300, 0.2, ignoreBlockIds).getTargetBlock().getLocation(); //player.getLocation();
+        loc.setY(loc.getBlockY() + 1);
 
         //loc.setX(loc.getBlockX() + 3);
 

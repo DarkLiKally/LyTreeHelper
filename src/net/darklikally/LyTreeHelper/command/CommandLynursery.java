@@ -20,6 +20,9 @@
 package net.darklikally.LyTreeHelper.command;
 
 import java.util.HashSet;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
@@ -81,6 +84,7 @@ public class CommandLynursery extends LyTreeHelperCommand {
         //if (typeName.equalsIgnoreCase("normal")) {
             types.add(TreeType.TREE);
             types.add(TreeType.BIRCH);
+            types.add(TreeType.REDWOOD);
         //}
 
         if (types != null && types.size() != 0) {
@@ -99,9 +103,29 @@ public class CommandLynursery extends LyTreeHelperCommand {
                         Material mat = player.getWorld().getBlockAt(x, y, z).getType();
 
                         if (mat == Material.DIRT || mat == Material.GRASS) {    
+                            TreeType type = null;
+                            Random generator = new Random();
+                            int rand = generator.nextInt(types.size());
+
+                            int typeNum = 0;
+                            for (TreeType typeT : types) {
+                                if(typeNum == Math.round(rand)) {
+                                    type = typeT;
+                                }
+                                typeNum++;
+                            }
+
                             Block saplingBlock = player.getWorld().getBlockAt(x, y + 1, z);
                             saplingBlock.setType(Material.SAPLING);
-    
+
+                            Byte saplingData = saplingBlock.getData();
+                            if(type == TreeType.BIRCH) {
+                                saplingData = (byte)(saplingData | (1 << 1));
+                            } else if(type == TreeType.REDWOOD){
+                                saplingData = (byte)(saplingData | (1 << 0));
+                            }
+                            saplingBlock.setData(saplingData);
+
                             affected++;
                             break;
                         } else if (mat != Material.AIR) {

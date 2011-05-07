@@ -57,8 +57,9 @@ max-tree-radius: 5
 
 # Should LyTreeHelper remove some money from the player's iConomy account on full destruction of a tree?
 # If set to on LyTreeHelper will remove the set amount of money from the players bank account.
-remove-iconomy-money-on-full-destruction: off
-remove-iconomy-money-amount: 10
+# "iconomy-money-on-full-destruction" must be a double value.
+enable-iconomy-support: off
+iconomy-money-on-full-destruction: 10.0
 
 # Enable apple-drops over time?
 # If enabled, LyTreeHelper will cause apple drops from trees over time.

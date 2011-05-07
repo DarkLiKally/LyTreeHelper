@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -36,6 +38,8 @@ import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+
+import com.iConomy.iConomy;
 
 /**
  *
@@ -77,6 +81,10 @@ public class LyTreeHelperBlockListener extends BlockListener {
     }
 
     public void destroyTree(Block firstBlock) {
+        destroyTree(null, firstBlock);
+    }
+
+    public void destroyTree(Player player, Block firstBlock) {
         LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(firstBlock.getWorld().getName());
 
         this.checkedBlocks = new ArrayList<Block>();
@@ -110,6 +118,24 @@ public class LyTreeHelperBlockListener extends BlockListener {
                 }
             }
         } else if (destroyTreeWood(firstBlock, returnValue, worldConfig)) {
+            // iConomy actions
+            if(worldConfig.isiConomySupport() && this.plugin.getiConomy() != null) {
+                if(player != null) {
+                    com.iConomy.system.Account account = iConomy.getAccount(player.getName());
+
+                    if(account != null) {
+                        com.iConomy.system.Holdings balance = account.getHoldings();
+
+                        if(balance.hasEnough(worldConfig.getiConomyMoneyOnFullDest())) {
+                            balance.subtract(worldConfig.getiConomyMoneyOnFullDest());
+                        } else {
+                            player.sendMessage(ChatColor.YELLOW + "You have not enough money to full destruct this tree.");
+                            return;
+                        }
+                    }
+                }
+            }
+
             for (Block block : this.checkedBlocks) {
                 if (block.getType() == Material.LOG) {
                     block.getWorld().dropItemNaturally(
@@ -274,11 +300,11 @@ public class LyTreeHelperBlockListener extends BlockListener {
                 if (worldConfig.getDestructionTools().size() > 0) {
                     for (int destructionTool : worldConfig.getDestructionTools()) {
                         if (event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
-                            destroyTree(event.getBlock());
+                            destroyTree(event.getPlayer(), event.getBlock());
                         }
                     }
                 } else {
-                    destroyTree(event.getBlock());
+                    destroyTree(event.getPlayer(), event.getBlock());
                 }
             } else if (worldConfig.isDestroyFaster()) {
                 fasterDecay(event.getBlock());
@@ -316,7 +342,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
                 ItemStack stack = new ItemStack(Material.LOG, 1, (short)0, Byte.valueOf(event.getBlock().getData()));
                 event.getBlock().setType(Material.AIR);
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
-                destroyTree(event.getBlock().getRelative(0, 1, 0));
+                destroyTree(event.getPlayer(), event.getBlock().getRelative(0, 1, 0));
             }
         } else if ((event.getBlock().getType() == Material.LOG)
                 && (worldConfig.isDestroyAllWood())) {
@@ -341,7 +367,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
                 ItemStack stack = new ItemStack(Material.LOG, 1, (short)0, Byte.valueOf(event.getBlock().getData()));
                 event.getBlock().setType(Material.AIR);
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
-                destroyTree(event.getBlock().getRelative(0, 1, 0));
+                destroyTree(event.getPlayer(), event.getBlock().getRelative(0, 1, 0));
             }
         }
     }

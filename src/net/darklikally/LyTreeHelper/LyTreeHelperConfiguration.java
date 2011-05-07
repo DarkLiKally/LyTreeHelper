@@ -57,6 +57,9 @@ public class LyTreeHelperConfiguration {
     private int maxTreeSize;
     private int maxTreeRadius;
 
+    private boolean iConomySupport;
+    private double iConomyMoneyOnFullDest;
+
     private Set<String> creaturesToSpawn;
     private double creatureSpawnChance;
 
@@ -154,6 +157,9 @@ public class LyTreeHelperConfiguration {
         int maxTreeSizePreset = (config.getBoolean("enable-high-stack-size", false) ? 6000 : 1800 );
         this.maxTreeSize = Math.min(maxTreeSizePreset, config.getInt("max-tree-size", 1800));
         this.maxTreeRadius = Math.min(config.getInt("max-tree-radius", 5), 50);
+
+        this.iConomySupport = config.getBoolean("enable-iconomy-support", false);
+        this.iConomyMoneyOnFullDest = config.getDouble("iconomy-money-on-full-destruction", 0.0);
 
         this.creaturesToSpawn = new HashSet<String>(config.getStringList("creatures-to-spawn-in-trees", null));
         this.creatureSpawnChance = config.getDouble("creature-spawn-chance", 50.0);
@@ -285,6 +291,20 @@ public class LyTreeHelperConfiguration {
      */
     public int getMaxTreeRadius() {
         return maxTreeRadius;
+    }
+
+    /**
+     * @return the maxTreeRadius
+     */
+    public boolean isiConomySupport() {
+        return iConomySupport;
+    }
+
+    /**
+     * @return the maxTreeRadius
+     */
+    public double getiConomyMoneyOnFullDest() {
+        return iConomyMoneyOnFullDest;
     }
 
     /**

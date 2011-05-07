@@ -55,6 +55,18 @@ max-tree-size: 1600
 # This setting can be an integer from 0 to 50.
 max-tree-radius: 5
 
+# Should LyTreeHelper remove some money from the player's iConomy account on full destruction of a tree?
+# If set to on LyTreeHelper will remove the set amount of money from the players bank account.
+remove-iconomy-money-on-full-destruction: off
+remove-iconomy-money-amount: 10
+
+# Enable apple-drops over time?
+# If enabled, LyTreeHelper will cause apple drops from trees over time.
+# Don't forget to set the drop chance!
+# "apple-drops-over-time-chance" must be a double from 0.0 to 100.0
+enable-apple-drops-over-time: on
+apple-drops-over-time-chance: 5.0
+
 # NOTE: The following 2 settings are not working at the moment!
 # This option works only if both "enable-full-tree-destruction" and "enable-full-wood-destruction" are set to on/true.
 # If you destroy a tree, one creature in this list will spawn at the location of the destroyed tree.

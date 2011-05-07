@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -31,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
+import com.iConomy.*;
 
 /**
  *
@@ -42,7 +45,10 @@ public class LyTreeHelperPlugin extends JavaPlugin {
 
     protected final LyTreeHelperCommands commandHandler = new LyTreeHelperCommands(this);
 
+    private iConomy iConomy = null;
+
     private final LyTreeHelperBlockListener blockListener = new LyTreeHelperBlockListener(this);
+    private final LyTreeHelperServerListener serverListener = new LyTreeHelperServerListener(this);
 
     private Map<String, LyTreeHelperConfiguration> worldConfigurations;
 
@@ -55,6 +61,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     public Logger getLogger() {
         return logger;
     }
+
     /**
      * Called on plugin enable.
      */
@@ -66,6 +73,10 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         this.commandHandler.registerCommands();
 
         this.blockListener.registerEvents();
+        this.serverListener.registerEvents();
+
+        // 25 ticks = about 1 second
+        this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDropTimer(this), 0, 50);
 
         this.worldConfigurations = new HashMap<String, LyTreeHelperConfiguration>();
         this.worldConfigurations.clear();
@@ -83,6 +94,14 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     public void onDisable() {
         logger.info("[LyTreeHelper] LyTreeHelper " + this.getDescription().getVersion() + " disabled.");
+    }
+
+    public iConomy getiConomy() {
+        return this.iConomy;
+    }
+
+    public void setiConomy(iConomy value) {
+        this.iConomy = value;
     }
 
     private LyTreeHelperConfiguration createWorldConfig(String world) {

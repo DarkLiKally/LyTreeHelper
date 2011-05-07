@@ -10,4 +10,4 @@ commands:
         usage: /<command> <radius> <normal|redwood|mixed> (density)
     lynursery:
         description: Generates a tree nursery in the specified radius around your position consisting of saplings.
-        usage: /<command> <radius> <normal|redwood|mixed> (density)
+        usage: /<command> <radius> (density)

@@ -52,9 +52,12 @@ public class LyTreeHelperPlugin extends JavaPlugin {
 
     public PermissionHandler Permissions;
 
+    public Logger getLogger() {
+        return logger;
+    }
     /**
      * Called on plugin enable.
-     */    
+     */
     public void onEnable() {
         getDataFolder().mkdirs();
 

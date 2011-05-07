@@ -11,8 +11,16 @@
 # - Lines starting with # are comments and so they are ignored.
 #
 
+# Should LyTreeHelper use another world's configuration for this world?
+# Set copy-from to the name of the world which configuration should be copied.
+copy-other-configuration: off
+copy-from: 
+
 # Should LyTreeHelper show the config for this world if the world is loading?
 show-config-on-start: on
+
+# Should LyTreeHelper add a log entry in the console if a player triggers a command?
+show-commands-in-log: on
 
 # Should LyTreeHelper use the Permissions plugin?
 use-permissions: on

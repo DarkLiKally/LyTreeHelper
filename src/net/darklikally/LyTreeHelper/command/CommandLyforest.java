@@ -68,6 +68,7 @@ public class CommandLyforest extends LyTreeHelperCommand {
                 density = Double.parseDouble(args[2]);
             } catch(Exception e) {
                 player.sendMessage(ChatColor.DARK_RED + "Invalid density! Only doubles, for example: 0.04");
+                return false;
             }
         }
 

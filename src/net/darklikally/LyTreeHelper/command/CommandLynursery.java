@@ -50,7 +50,7 @@ public class CommandLynursery extends LyTreeHelperCommand {
         }
         Player player = (Player) sender;
 
-        LyTreeHelperCommands.checkArgs(args, 2, 3);
+        LyTreeHelperCommands.checkArgs(args, 1, 2);
 
         if(!plugin.hasPermission(player, "generate.nursery")) {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
@@ -61,11 +61,12 @@ public class CommandLynursery extends LyTreeHelperCommand {
 
         double density = 0.04;
 
-        if(args.length == 3) {
+        if(args.length == 2) {
             try {
-                density = Double.parseDouble(args[2]);
+                density = Double.parseDouble(args[1]);
             } catch(Exception e) {
                 player.sendMessage(ChatColor.DARK_RED + "Invalid density! Only doubles, for example: 0.04");
+                return false;
             }
         }
 

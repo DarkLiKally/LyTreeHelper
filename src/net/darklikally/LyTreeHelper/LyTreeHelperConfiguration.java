@@ -39,12 +39,13 @@ public class LyTreeHelperConfiguration {
 
     private static final Logger logger = Logger.getLogger("Minecraft.LyTreeHelper");
 
-    //private LyTreeHelperPlugin plugin;
+    private LyTreeHelperPlugin plugin;
     
     private String world;
     private File configFile;
 
     /* start - Options */
+    private boolean showCommandsInLog;
     private boolean decay;
     private boolean fasterDecay;
     private boolean destroyFaster;
@@ -71,7 +72,7 @@ public class LyTreeHelperConfiguration {
     /* end - Options */
 
     public LyTreeHelperConfiguration(LyTreeHelperPlugin plugin, String world, File configFile) {
-        //this.plugin = plugin;
+        this.plugin = plugin;
         this.world = world;
         this.configFile = configFile;
 
@@ -130,7 +131,18 @@ public class LyTreeHelperConfiguration {
     private void loadConfiguration() {
         Configuration config = new Configuration(this.configFile);
         config.load();
- 
+
+        if(config.getBoolean("copy-other-configuration", false)) {
+            String worldToCopy = config.getString("copy-from", null);
+            File otherWorldsConfigFile = new File(this.plugin.getDataFolder(), worldToCopy + ".yml" );
+            if(otherWorldsConfigFile.exists()) {
+                this.configFile = otherWorldsConfigFile;
+                config = new Configuration(this.configFile);
+                config.load();
+            }
+        }
+
+        this.showCommandsInLog = config.getBoolean("show-commands-in-log", true);
         this.decay = config.getBoolean("enable-leaves-decay", true);
         this.fasterDecay = config.getBoolean("enable-faster-decay", false);
         this.destroyFaster = config.getBoolean("enable-faster-leave-destruction", false);
@@ -164,6 +176,9 @@ public class LyTreeHelperConfiguration {
         if (config.getBoolean("show-config-on-start", true)) {
             logger.log(Level.INFO, "[LyTreeHelper] ===========================");
             logger.log(Level.INFO, "[LyTreeHelper] Configuration for " + world + ":");
+            logger.log(Level.INFO, config.getBoolean("copy-other-configuration", false) ?
+                    "[LyTreeHelper] Configuration copied from " + config.getString("copy-from", "")
+                    : "[LyTreeHelper] Use " + this.configFile.getName() + " for configuration.");
             logger.log(Level.INFO, this.decay ?
                     "[LyTreeHelper] Leave decay is enabled."
                     : "[LyTreeHelper] Leave decay is disabled.");
@@ -205,9 +220,15 @@ public class LyTreeHelperConfiguration {
         }
     }
 
-    public String getWorld()
-    {
+    public String getWorld() {
         return this.world;
+    }
+
+    /**
+     * @return show commands in log
+     */
+    public boolean isShowCommandsInLog() {
+        return showCommandsInLog;
     }
 
     /**

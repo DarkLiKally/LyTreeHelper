@@ -21,6 +21,8 @@ package net.darklikally.LyTreeHelper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -74,8 +76,14 @@ public class LyTreeHelperCommands implements CommandExecutor {
 
             String senderName = sender instanceof Player ? ((Player)sender).getName() : "Console";
             Player senderPlayer = (Player) sender;
-            
-            command.handle(sender, senderName, cmdName, args, this.plugin, this.plugin.getWorldConfig(senderPlayer.getWorld().getName()));
+            LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(senderPlayer.getWorld().getName());
+
+            if(worldConfig.isShowCommandsInLog()) {
+                this.plugin.getLogger().log(Level.INFO, "[LyTreeHelper] Player "
+                        + senderName + " issued command: " + cmdName);
+            }
+
+            command.handle(sender, senderName, cmdName, args, this.plugin, worldConfig);
             return true;
 
         } catch (InsufficientArgumentsException e) {

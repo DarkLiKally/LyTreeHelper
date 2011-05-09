@@ -21,8 +21,6 @@ package net.darklikally.LyTreeHelper.command;
 
 import java.util.HashSet;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
@@ -53,12 +51,12 @@ public class CommandLynursery extends LyTreeHelperCommand {
         }
         Player player = (Player) sender;
 
-        LyTreeHelperCommands.checkArgs(args, 1, 2);
-
         if(!plugin.hasPermission(player, "generate.nursery")) {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
             return true;
         }
+
+        LyTreeHelperCommands.checkArgs(args, 1, 2);
         
         Location loc = player.getLocation();
 
@@ -78,6 +76,7 @@ public class CommandLynursery extends LyTreeHelperCommand {
             radius = Integer.parseInt(args[0]);
         } catch(Exception e) {
             player.sendMessage(ChatColor.DARK_RED + "Invalid radius! Only numbers.");
+            return false;
         }
         HashSet<TreeType> types = new HashSet<TreeType>();
 

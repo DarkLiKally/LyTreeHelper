@@ -22,7 +22,6 @@ package net.darklikally.LyTreeHelper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -54,6 +53,9 @@ public class LyTreeHelperCommands implements CommandExecutor {
         this.commands.put("lytree", new CommandLytree());
         this.commands.put("lyforest", new CommandLyforest());
         this.commands.put("lynursery", new CommandLynursery());
+        this.commands.put("lyregisterforest", new CommandLyregisterforest());
+        this.commands.put("lydeleteforest", new CommandLydeleteforest());
+        this.commands.put("lyregenerate", new CommandLyregenerate());
     }
 
     public void registerCommands() {

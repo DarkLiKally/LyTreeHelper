@@ -1,6 +1,6 @@
 name: LyTreeHelper
 main: net.darklikally.LyTreeHelper.LyTreeHelperPlugin
-version: 2.2RC4
+version: 2.5alpha1
 commands:
     lytree:
         description: Generates a tree near your position.
@@ -11,3 +11,12 @@ commands:
     lynursery:
         description: Generates a tree nursery in the specified radius around your position consisting of saplings.
         usage: /<command> <radius> (density)
+    lyregisterforest:
+        description: Registers a new forest at your current position.
+        usage: /<command> <forestname> <radius> <normal|redwood|mixed> (density)
+    lydeleteforest:
+        description: Deletes a registered forest.
+        usage: /<command> <forestname>
+    lyregenerate:
+        description: Regenerates a forest (Plant new trees).
+        usage: /<command> <forestname>

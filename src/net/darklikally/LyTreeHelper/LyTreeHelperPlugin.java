@@ -52,6 +52,8 @@ public class LyTreeHelperPlugin extends JavaPlugin {
 
     private Map<String, LyTreeHelperConfiguration> worldConfigurations;
 
+    private net.darklikally.LyTreeHelper.database.Database database;
+
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
 
     String pluginDir = "plugins/LyTreeHelper/";
@@ -81,6 +83,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         this.worldConfigurations = new HashMap<String, LyTreeHelperConfiguration>();
         this.worldConfigurations.clear();
 
+        this.database = new net.darklikally.LyTreeHelper.database.Database(this,
+                new File(this.getDataFolder(), "db.yml"));
+
         for (World world : this.getServer().getWorlds()) {
             String worldName = world.getName();
             this.worldConfigurations.put(worldName, createWorldConfig(worldName));
@@ -98,6 +103,10 @@ public class LyTreeHelperPlugin extends JavaPlugin {
 
     public iConomy getiConomy() {
         return this.iConomy;
+    }
+
+    public net.darklikally.LyTreeHelper.database.Database getLTHDatabase() {
+        return this.database;
     }
 
     public void setiConomy(iConomy value) {

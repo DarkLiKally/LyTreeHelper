@@ -19,16 +19,14 @@
 
 package net.darklikally.LyTreeHelper.command;
 
+import java.io.IOException;
+
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
 import net.darklikally.LyTreeHelper.LyTreeHelperConfiguration;
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
-import net.darklikally.minecraft.utils.TargetBlock;
-import net.darklikally.minecraft.utils.TreeGenerator;
-import net.darklikally.minecraft.utils.TreeGenerator.TreeType;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,7 +34,7 @@ import org.bukkit.entity.Player;
  *
  * @author DarkLiKally
  */
-public class CommandLytree extends LyTreeHelperCommand {
+public class CommandLydeleteforest extends LyTreeHelperCommand {
     @Override
     public boolean handle(CommandSender sender, String senderName,
             String command, String[] args, LyTreeHelperPlugin plugin,
@@ -48,47 +46,34 @@ public class CommandLytree extends LyTreeHelperCommand {
         }
         Player player = (Player) sender;
 
-        if(!plugin.hasPermission(player, "generate.trees")) {
+        if(!plugin.hasPermission(player, "db.deleteforest")) {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
             return true;
         }
 
         LyTreeHelperCommands.checkArgs(args, 1, 1);
 
-        int[] ignoreBlockIds = {8, 9};
-        Location loc = new TargetBlock(player, 300, 0.2, ignoreBlockIds).getTargetBlock().getLocation(); //player.getLocation();
-        loc.setY(loc.getBlockY() + 1);
+        String name = args[0];
 
-        //loc.setX(loc.getBlockX() + 3);
+        if(name != null && name != "") {
+            net.darklikally.LyTreeHelper.database.Database db = plugin.getLTHDatabase();
 
-        String typeName = args[0];
-        TreeType type = null;
+            if(db.getFromPath("forests." + name) != null) {
+                db.removePath("forests." + name);
 
-        if (typeName.equalsIgnoreCase("tree")) {
-            type = TreeType.TREE;
-        } else if (typeName.equalsIgnoreCase("bigtree")) {
-            type = TreeType.BIG_TREE;
-        } else if (typeName.equalsIgnoreCase("birch")) {
-            type = TreeType.BIRCH;
-        } else if (typeName.equalsIgnoreCase("redwood")) {
-            type = TreeType.REDWOOD;
-        } else if (typeName.equalsIgnoreCase("tallredwood")) {
-            type = TreeType.TALL_REDWOOD;
-        } else if (typeName.equalsIgnoreCase("randomredwood")) {
-            type = TreeType.RANDOM_REDWOOD;
-        } else if (typeName.equalsIgnoreCase("random")) {
-            type = TreeType.RANDOM;
-        } 
+                try {
+                    db.save();
+                } catch(IOException e) {
+                    player.sendMessage("Failed saving database.");
+                    return false;
+                }
 
-        if (type != null) {
-            TreeGenerator gen = new TreeGenerator(plugin, type);
-            if (!gen.generator(player.getWorld().getName(), loc.toVector())) {
-                player.sendMessage("A tree can't go there.");
+                player.sendMessage(ChatColor.YELLOW + "Forest " + name + " deleted.");
             } else {
-                player.sendMessage(ChatColor.YELLOW + type.getName() + " created.");
+                player.sendMessage(ChatColor.DARK_RED + "There is no forest " + name);
             }
         } else {
-            player.sendMessage(ChatColor.DARK_RED + "That tree type does not exist.");
+            player.sendMessage(ChatColor.DARK_RED + "That forest type does not exist.");
         }
 
         return true;

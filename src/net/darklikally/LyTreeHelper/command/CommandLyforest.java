@@ -52,12 +52,12 @@ public class CommandLyforest extends LyTreeHelperCommand {
         }
         Player player = (Player) sender;
 
-        LyTreeHelperCommands.checkArgs(args, 2, 3);
-
         if(!plugin.hasPermission(player, "generate.forests")) {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
             return true;
         }
+
+        LyTreeHelperCommands.checkArgs(args, 2, 3);
         
         Location loc = player.getLocation();
 
@@ -77,6 +77,7 @@ public class CommandLyforest extends LyTreeHelperCommand {
             radius = Integer.parseInt(args[0]);
         } catch(Exception e) {
             player.sendMessage(ChatColor.DARK_RED + "Invalid radius! Only numbers.");
+            return false;
         }
         String typeName = args[1];
         HashSet<TreeType> types = new HashSet<TreeType>();

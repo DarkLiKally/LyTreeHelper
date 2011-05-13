@@ -22,8 +22,8 @@ package net.darklikally.LyTreeHelper.command;
 import java.util.HashSet;
 import java.util.Random;
 
-import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
+import net.darklikally.LyTreeHelper.LyTreeHelperCommands.CommandHandlingException;
 import net.darklikally.LyTreeHelper.LyTreeHelperConfiguration;
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
 import net.darklikally.minecraft.utils.TreeGenerator;
@@ -44,7 +44,7 @@ public class CommandLyforest extends LyTreeHelperCommand {
     @Override
     public boolean handle(CommandSender sender, String senderName,
             String command, String[] args, LyTreeHelperPlugin plugin,
-            LyTreeHelperConfiguration worldConfig) throws CommandHandlingException {
+            LyTreeHelperConfiguration worldConfig, Location forceLocation) throws CommandHandlingException {
         
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players may use this command");
@@ -143,5 +143,13 @@ public class CommandLyforest extends LyTreeHelperCommand {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean handle(CommandSender sender, String senderName,
+            String command, String[] args, LyTreeHelperPlugin plugin,
+            LyTreeHelperConfiguration worldConfig)
+            throws CommandHandlingException {
+        return handle(sender, senderName, command, args, plugin, worldConfig, null);
     }
 }

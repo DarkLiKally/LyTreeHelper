@@ -19,10 +19,11 @@
 
 package net.darklikally.LyTreeHelper.command;
 
+import net.darklikally.LyTreeHelper.LyTreeHelperCommands.CommandHandlingException;
 import net.darklikally.LyTreeHelper.LyTreeHelperConfiguration;
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
-import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -34,5 +35,12 @@ public abstract class LyTreeHelperCommand {
     public abstract boolean handle(CommandSender sender, String senderName,
             String command, String[] args, LyTreeHelperPlugin plugin, LyTreeHelperConfiguration worldConfig)
             throws CommandHandlingException;
+
+    public boolean handle(CommandSender sender, String senderName,
+            String command, String[] args, LyTreeHelperPlugin plugin,
+            LyTreeHelperConfiguration worldConfig, Location forceLocation)
+            throws CommandHandlingException {
+        return false;
+    }
 
 }

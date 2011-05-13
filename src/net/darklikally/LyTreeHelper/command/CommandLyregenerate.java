@@ -19,19 +19,12 @@
 
 package net.darklikally.LyTreeHelper.command;
 
-import java.util.HashSet;
-import java.util.Random;
-
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands.*;
 import net.darklikally.LyTreeHelper.LyTreeHelperCommands;
 import net.darklikally.LyTreeHelper.LyTreeHelperConfiguration;
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
-import net.darklikally.minecraft.utils.TreeGenerator;
-import net.darklikally.minecraft.utils.TreeGenerator.TreeType;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -46,7 +39,41 @@ public class CommandLyregenerate extends LyTreeHelperCommand {
             String command, String[] args, LyTreeHelperPlugin plugin,
             LyTreeHelperConfiguration worldConfig) throws CommandHandlingException {
         
-        //TODO
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("Only players may use this command");
+            return true;
+        }
+        Player player = (Player) sender;
+
+        if(!plugin.hasPermission(player, "db.regenerateforest")) {
+            sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
+            return true;
+        }
+
+        LyTreeHelperCommands.checkArgs(args, 1, 1);
+
+        String name = args[0];
+
+        if(name != null && name != "") {
+            net.darklikally.LyTreeHelper.database.Database db = plugin.getLTHDatabase();
+
+            if(db.getFromPath("forests." + name) != null) {
+                String type = db.getString("forests." + name + ".type", "normal");
+                int radius = db.getInt("forests." + name + ".radius", 5);
+                double density = db.getDouble("forests." + name + ".density", 0.04);
+                Vector locVec = db.getVector("forests." + name + ".location");
+                String worldName = db.getString("forests." + name + ".world");
+
+                CommandLyforest forestgen = new CommandLyforest();
+                forestgen.handle(sender, senderName, command,
+                        new String[]{String.valueOf(radius),type,String.valueOf(density)},
+                        plugin, worldConfig, locVec.toLocation(plugin.getServer().getWorld(worldName)));
+            } else {
+                player.sendMessage(ChatColor.DARK_RED + "There is no forest " + name);
+            }
+        } else {
+            player.sendMessage(ChatColor.DARK_RED + "That forest type does not exist.");
+        }
 
         return true;
     }

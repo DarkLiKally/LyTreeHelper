@@ -19,11 +19,11 @@
 
 package net.darklikally.minecraft.utils;
 
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.entity.CreatureType;
 import org.bukkit.entity.Player;
 
-import net.darklikally.minecraft.utils.MobType;
-import net.darklikally.minecraft.utils.MobType.MobException;
 import net.minecraft.server.WorldServer;
 
 import org.bukkit.ChatColor;
@@ -37,33 +37,46 @@ import org.bukkit.Server;
 public class SpawnMob {
     public SpawnMob(Server server, Player player, Location loc, String type) {
 
-        MobType mob = MobType.fromName(this.capitalCase(type));
-        if (mob == null) {
+    	if (type.equalsIgnoreCase("PigZombie")) {
+    		type = "PigZombie";
+    	}else {
+    		type = this.capitalCase(type);
+    	}
+    	CreatureType ct = CreatureType.fromName(type);
+        if (ct == null) {
             player.sendMessage(ChatColor.DARK_RED + "Invalid mob type. Possible mob types are:");
             player.sendMessage(ChatColor.DARK_RED + "Squid, Creeper, Zombie, Skeleton, Ghast, Slime, Pig, PigZombie, Spider, Sheep, Chicken, Wolf, Cow"); 
             return;
         }
         WorldServer worldServer = ((org.bukkit.craftbukkit.CraftWorld)player.getWorld()).getHandle();
         CraftEntity spawnedMob = null;
-
-        try {
-            spawnedMob = mob.spawn(player, server);
-        } catch (MobException e) {
-            player.sendMessage("Unable to spawn mob.");
-            return;
-        }
-
+        
         int blockTypeId = player.getWorld().getBlockTypeIdAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
 
         while (!(blockTypeId == 0 || blockTypeId == 8 || blockTypeId == 9)) {
             loc.setY(loc.getY() + 1);
             blockTypeId = player.getWorld().getBlockTypeIdAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         }
-
-        spawnedMob.teleportTo(loc);
-
-        worldServer.a(spawnedMob.getHandle());
-        //player.sendMessage(mob.name + " spawned.");
+        
+        player.getWorld().spawnCreature(loc, ct);
+    }
+    
+    public SpawnMob(Server server, Block spawnblock, String type) {
+    	
+    	Location loc = spawnblock.getLocation();
+    	if (type.equalsIgnoreCase("PigZombie")) {
+    		type = "PigZombie";
+    	}else {
+    		type = this.capitalCase(type);
+    	}
+    	CreatureType ct = CreatureType.fromName(type);
+    	
+    	if (ct == null) {
+        	System.out.println("Couldn't find the mob type!");
+            return;
+        }
+    	spawnblock.getWorld().spawnCreature(loc, ct);
+        
     }
 
     private String capitalCase(String s)

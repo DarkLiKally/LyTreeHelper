@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+
+import net.darklikally.minecraft.utils.SpawnMob;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -416,6 +419,17 @@ public class LyTreeHelperBlockListener extends BlockListener {
     }
 
     private void spawnCreature(Block firstBlock) {
+    	LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(firstBlock.getWorld().getName());
+    	Random generator = new Random();
+        int rand = generator.nextInt(10000);
+        //Is a monster going to spawn?
+        if (rand >= (10000.0 - (worldConfig.getCreatureSpawnChance() * 100.0))) {
+            Object[] creatures = worldConfig.getCreaturesToSpawn().toArray();
+            //Pick the monster to spawn.
+            String creature = (String)creatures[generator.nextInt(creatures.length)];
+            System.out.println("Spawning mob: " + creature);
+            SpawnMob themob = new SpawnMob(this.plugin.getServer(), firstBlock, creature);
+        }
     }
 
     public boolean isGroundConnection(Block block) {

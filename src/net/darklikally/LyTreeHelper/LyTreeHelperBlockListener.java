@@ -399,28 +399,28 @@ public class LyTreeHelperBlockListener extends BlockListener {
             block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.LEAVES, 1, (short)0, (byte)(block.getData() & ~0x8)));
         }
         if (rand >= (10000.0 - (worldConfig.getSaplingChance() * 100.0))) {
-        	block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.SAPLING, 1, (short)0, (byte)(block.getData() & ~0x8)));
+            block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.SAPLING, 1, (short)0, (byte)(block.getData() & ~0x8)));
         }
 
         Iterator<Map.Entry<String,Double>> iterator = worldConfig.getCustomDrops().entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String,Double> pair = (Map.Entry<String,Double>)iterator.next();
             if (rand >= (10000.0 - (pair.getValue() * 100.0))) {
-            	//Split the value from the metadata
-        		String customDrop[] = pair.getKey().split(",");
-        		ItemStack custDropItem = new ItemStack(Material.getMaterial(Integer.parseInt(customDrop[0])), 1);
-        		//If we have Metadata, set it.
-        		if(customDrop.length > 1) {
-            		custDropItem.setDurability(Short.parseShort(customDrop[1]));
-        		}
-        		block.getWorld().dropItemNaturally(block.getLocation(), custDropItem);
+                //Split the value from the metadata
+                String customDrop[] = pair.getKey().split(",");
+                ItemStack custDropItem = new ItemStack(Material.getMaterial(Integer.parseInt(customDrop[0])), 1);
+                //If we have Metadata, set it.
+                if(customDrop.length > 1) {
+                    custDropItem.setDurability(Short.parseShort(customDrop[1]));
+                }
+                block.getWorld().dropItemNaturally(block.getLocation(), custDropItem);
             }
         }
     }
 
     private void spawnCreature(Block firstBlock) {
-    	LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(firstBlock.getWorld().getName());
-    	Random generator = new Random();
+        LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(firstBlock.getWorld().getName());
+        Random generator = new Random();
         int rand = generator.nextInt(10000);
         //Is a monster going to spawn?
         if (rand >= (10000.0 - (worldConfig.getCreatureSpawnChance() * 100.0))) {

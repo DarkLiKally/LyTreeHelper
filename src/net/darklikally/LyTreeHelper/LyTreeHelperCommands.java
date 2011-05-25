@@ -30,7 +30,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 
-import net.darklikally.LyTreeHelper.command.*;
+import net.darklikally.LyTreeHelper.commands.CommandLyforest;
+import net.darklikally.LyTreeHelper.commands.CommandLyforestdb;
+import net.darklikally.LyTreeHelper.commands.CommandLynursery;
+import net.darklikally.LyTreeHelper.commands.CommandLyregenerate;
+import net.darklikally.LyTreeHelper.commands.CommandLytree;
 
 /**
  *

@@ -79,8 +79,8 @@ public class LyTreeHelperBlockListener extends BlockListener {
     public void registerEvents() {
         PluginManager pm = plugin.getServer().getPluginManager();
 
-        pm.registerEvent(Event.Type.LEAVES_DECAY, this, Priority.High, plugin);
-        pm.registerEvent(Event.Type.BLOCK_BREAK, this, Priority.High, plugin);
+        pm.registerEvent(Event.Type.LEAVES_DECAY, this, Priority.Highest, plugin);
+        pm.registerEvent(Event.Type.BLOCK_BREAK, this, Priority.Highest, plugin);
     }
 
     public void destroyTree(Block firstBlock) {
@@ -341,7 +341,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
             }
             
             if(destructionAllowed) {
-                event.setCancelled(true);
+                //event.setCancelled(true);
                 ItemStack stack = new ItemStack(Material.LOG, 1, (short)0, Byte.valueOf(event.getBlock().getData()));
                 event.getBlock().setType(Material.AIR);
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
@@ -366,7 +366,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
             }
             
             if(destructionAllowed) {
-                event.setCancelled(true);
+                //event.setCancelled(true);
                 ItemStack stack = new ItemStack(Material.LOG, 1, (short)0, Byte.valueOf(event.getBlock().getData()));
                 event.getBlock().setType(Material.AIR);
                 event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);

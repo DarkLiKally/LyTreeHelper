@@ -1,6 +1,6 @@
 name: LyTreeHelper
 main: net.darklikally.LyTreeHelper.LyTreeHelperPlugin
-version: 2.5alpha1
+version: 2.5.1
 authors:
     - DarkLiKally
     - Tux2

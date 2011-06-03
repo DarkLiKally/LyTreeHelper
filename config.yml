@@ -61,6 +61,7 @@ max-tree-radius: 5
 enable-iconomy-support: off
 iconomy-money-on-full-destruction: 10.0
 
+# NOTE: The following 2 options are not working in this version
 # Enable apple-drops over time?
 # If enabled, LyTreeHelper will cause apple drops from trees over time.
 # Don't forget to set the drop chance!

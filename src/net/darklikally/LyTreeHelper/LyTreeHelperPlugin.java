@@ -131,8 +131,8 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         }
     }
 
-    public boolean hasPermission(Player player, String permission) {return true;
-        /*try {
+    public boolean hasPermission(Player player, String permission) {
+        try {
             if(this.Permissions != null) {
                 if (!this.Permissions.has(player, "lytreehelper." + permission) && !player.isOp()) {
                     return false;
@@ -145,7 +145,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         } catch (Throwable t) {
             //t.printStackTrace();
             return false;
-        }*/
+        }
     }
 
     public boolean inGroup(String world, String player, String group) {

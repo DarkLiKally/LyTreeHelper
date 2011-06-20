@@ -27,6 +27,7 @@ import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
 import net.darklikally.minecraft.utils.TargetBlock;
 import net.darklikally.minecraft.utils.TreeGenerator;
 import net.darklikally.minecraft.utils.TreeGenerator.TreeType;
+import net.darklikally.minecraft.utils.WorldGenMammothTree;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -56,7 +57,7 @@ public class CommandLytree extends LyTreeHelperCommand {
 
         LyTreeHelperCommands.checkArgs(args, 1, 1);
 
-        int[] ignoreBlockIds = {8, 9};
+        int[] ignoreBlockIds = {8, 9, 20};
         Location loc = new TargetBlock(player, 300, 0.2, ignoreBlockIds).getTargetBlock().getLocation(); //player.getLocation();
         loc.setY(loc.getBlockY() + 1);
 
@@ -79,7 +80,12 @@ public class CommandLytree extends LyTreeHelperCommand {
             type = TreeType.RANDOM_REDWOOD;
         } else if (typeName.equalsIgnoreCase("random")) {
             type = TreeType.RANDOM;
-        } 
+        } else if (typeName.equalsIgnoreCase("mammoth")) {
+            int treeWidth = (int) (Math.round(Math.random() * 4) + 2);
+            @SuppressWarnings("unused")
+            WorldGenMammothTree gen = new WorldGenMammothTree(player, loc, treeWidth);
+            return true;
+        }
 
         if (type != null) {
             TreeGenerator gen = new TreeGenerator(plugin, type);

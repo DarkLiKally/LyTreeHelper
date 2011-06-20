@@ -52,6 +52,8 @@ public class LyTreeHelperConfiguration {
     private boolean destroyAll;
     private boolean destroyAllWood;
 
+    private boolean autoplantSapling;
+
     private boolean onlyTopDown;
 
     private int maxTreeSize;
@@ -59,6 +61,9 @@ public class LyTreeHelperConfiguration {
 
     private boolean iConomySupport;
     private double iConomyMoneyOnFullDest;
+
+    private boolean appleDropOverTime;
+    private double appleDropOverTimeChance;
 
     private Set<String> creaturesToSpawn;
     private double creatureSpawnChance;
@@ -152,6 +157,8 @@ public class LyTreeHelperConfiguration {
         this.destroyAll = config.getBoolean("enable-full-tree-destruction", true);
         this.destroyAllWood = config.getBoolean("enable-full-wood-destruction", true);
 
+        this.autoplantSapling = config.getBoolean("enable-autoplant-sapling", false);
+
         this.onlyTopDown = config.getBoolean("enable-only-top-down-drops", false);
 
         int maxTreeSizePreset = (config.getBoolean("enable-high-stack-size", false) ? 6000 : 1800 );
@@ -160,6 +167,9 @@ public class LyTreeHelperConfiguration {
 
         this.iConomySupport = config.getBoolean("enable-iconomy-support", false);
         this.iConomyMoneyOnFullDest = config.getDouble("iconomy-money-on-full-destruction", 0.0);
+
+        this.appleDropOverTime = config.getBoolean("enable-apple-drops-over-time", false);
+        this.appleDropOverTimeChance = config.getDouble("apple-drops-over-time-chance", 1.0);
 
         this.creaturesToSpawn = new HashSet<String>(config.getStringList("creatures-to-spawn-in-trees", null));
         this.creatureSpawnChance = config.getDouble("creature-spawn-chance", 50.0);
@@ -200,9 +210,16 @@ public class LyTreeHelperConfiguration {
             logger.log(Level.INFO, this.destroyAllWood ?
                     "[LyTreeHelper] Full wood destruction is enabled."
                     : "[LyTreeHelper] Full wood destruction is disabled.");
+            logger.log(Level.INFO, this.autoplantSapling ?
+                    "[LyTreeHelper] Autoplant-Sapling enabled."
+                    : "[LyTreeHelper] Autoplant-Sapling disabled.");
             logger.log(Level.INFO, "[LyTreeHelper] === === === === === === ===");
             logger.log(Level.INFO, "[LyTreeHelper] Max. tree size set to " + this.maxTreeSize);
             logger.log(Level.INFO, "[LyTreeHelper] Max. tree radius set to " + this.maxTreeRadius);
+            logger.log(Level.INFO, "[LyTreeHelper] === === === === === === ===");
+            logger.log(Level.INFO, this.appleDropOverTime ?
+                    "[LyTreeHelper] Apple drops over time enabled with a chance of " + this.appleDropOverTimeChance + " %."
+                    : "[LyTreeHelper] Apple drops over time disabled.");
             logger.log(Level.INFO, "[LyTreeHelper] === === === === === === ===");
             logger.log(Level.INFO, this.creaturesToSpawn.size() > 0 ?
                     "[LyTreeHelper] Number of creatures which can spawn in a tree: " + this.creaturesToSpawn.size()
@@ -273,6 +290,13 @@ public class LyTreeHelperConfiguration {
     }
 
     /**
+     * @return the autoplantSapling
+     */
+    public boolean isAutoplantSapling() {
+        return autoplantSapling;
+    }
+
+    /**
      * @return the onlyTopDown
      */
     public boolean isOnlyTopDown() {
@@ -305,6 +329,20 @@ public class LyTreeHelperConfiguration {
      */
     public double getiConomyMoneyOnFullDest() {
         return iConomyMoneyOnFullDest;
+    }
+
+    /**
+     * @return the appleDropOverTime
+     */
+    public boolean isAppleDropOverTime() {
+        return appleDropOverTime;
+    }
+
+    /**
+     * @return the maxTreeRadius
+     */
+    public double getAppleDropOverTimeChance() {
+        return appleDropOverTimeChance;
     }
 
     /**

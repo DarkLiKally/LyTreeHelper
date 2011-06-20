@@ -35,6 +35,7 @@ import org.bukkit.Server;
  * @author DarkLiKally
  */
 public class SpawnMob {
+    @SuppressWarnings("unused")
     public SpawnMob(Server server, Player player, Location loc, String type) {
 
     	if (type.equalsIgnoreCase("PigZombie")) {

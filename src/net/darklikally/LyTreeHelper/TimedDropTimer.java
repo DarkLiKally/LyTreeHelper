@@ -18,7 +18,15 @@
  */
 package net.darklikally.LyTreeHelper;
 
+import java.util.Random;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 
 /**
@@ -37,8 +45,36 @@ public class TimedDropTimer implements Runnable {
         Player[] players = plugin.getServer().getOnlinePlayers();
 
         for (Player player : players) {
-            //TODO Check the area around the player for leave blocks and calculate, for about 3 blocks, a apple drop (with a user specified drop chance)
-            //TODO If the apple drops are deactivated for the current world of the player -> continue
+            LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(player.getWorld().getName());
+
+            if(worldConfig.isAppleDropOverTime()) {
+                Location playerLoc = player.getLocation();
+
+                for(int x = playerLoc.getBlockX() - 4; x <= playerLoc.getBlockX() + 4; x++) {
+                    for(int y = playerLoc.getBlockY() + 5; y >= playerLoc.getBlockY() - 1; y--) {
+                        for(int z = playerLoc.getBlockZ() - 4; z <= playerLoc.getBlockZ() + 4; z++) {
+                            Block block = player.getWorld().getBlockAt(x, y, z);
+
+                            if(block.getType() == Material.LEAVES) {
+                                if(block.getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+                                    Random generator = new Random();
+                                    int rand = generator.nextInt(10000);
+
+                                    if (rand >= (10000.0 - (worldConfig.getAppleDropOverTimeChance() * 100.0))) {
+                                        player.getWorld().dropItemNaturally(
+                                                block.getRelative(BlockFace.DOWN).getLocation(),
+                                                new ItemStack(Material.APPLE, 1));
+                                        player.sendMessage(ChatColor.GREEN + "An apple dropped near your position!");
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                continue;
+            }
         }
     }
 

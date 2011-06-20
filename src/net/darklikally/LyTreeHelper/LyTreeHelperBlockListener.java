@@ -20,11 +20,12 @@
 package net.darklikally.LyTreeHelper;
  
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import net.darklikally.minecraft.utils.SpawnMob;
 
@@ -45,8 +46,9 @@ import org.bukkit.block.BlockFace;
 import com.iConomy.iConomy;
 
 /**
- *
+ * Rewritten on 2011-05-20-12-30-00+01-00
  * @author DarkLiKally
+ * @version 2.0
  */
 public class LyTreeHelperBlockListener extends BlockListener {
     /**
@@ -56,7 +58,21 @@ public class LyTreeHelperBlockListener extends BlockListener {
 
     private List<Location> checkBlocks = new ArrayList<Location>();
 
-    private List<Block> checkedBlocks;
+    private HashMap<Integer,List<Block>> checkedBlocks = new HashMap<Integer,List<Block>>();
+
+    private HashMap<Integer,Boolean> hasLeaves = new HashMap<Integer,Boolean>();
+
+    private List<Material> blocksToIgnore = Arrays.asList(
+            Material.AIR,
+            Material.SAPLING,
+            Material.RED_ROSE,
+            Material.YELLOW_FLOWER,
+            Material.BROWN_MUSHROOM,
+            Material.RED_MUSHROOM,
+            Material.LONG_GRASS,
+            Material.DEAD_BUSH);
+
+    private int processCoutner = 0;
 
     private int checkedBlocksCounter;
 
@@ -83,6 +99,16 @@ public class LyTreeHelperBlockListener extends BlockListener {
         pm.registerEvent(Event.Type.BLOCK_BREAK, this, Priority.Highest, plugin);
     }
 
+    private void clearProcess(int processNumber) {
+        this.checkedBlocks.remove(processNumber);
+        this.hasLeaves.remove(processNumber);
+        this.processCoutner--;
+    }
+
+    private boolean hasLeaves(int processNumber) {
+        return this.hasLeaves.get(processNumber);
+    }
+
     public void destroyTree(Block firstBlock) {
         destroyTree(null, firstBlock);
     }
@@ -90,168 +116,185 @@ public class LyTreeHelperBlockListener extends BlockListener {
     public void destroyTree(Player player, Block firstBlock) {
         LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(firstBlock.getWorld().getName());
 
-        this.checkedBlocks = new ArrayList<Block>();
-        this.checkedBlocksCounter = 0;
-        boolean returnValue = true;
+        this.processCoutner++;
+        int processNumber = this.processCoutner;
+        this.checkedBlocks.put(processNumber, new ArrayList<Block>());
+        this.hasLeaves.put(processNumber, false);
+        boolean stdRetVal = true;
+        boolean doAutoplantSapling = false;
 
-        if ((worldConfig.isDestroyAllWood() && !worldConfig.isDestroyAll())) {
-            if (destroyTreeWoodOnly(firstBlock, returnValue, worldConfig)) {
-                for (Block block : this.checkedBlocks) {
+        if(!worldConfig.isDestroyAll() && worldConfig.isDestroyAllWood()) {
+            if(detectTreeWood(firstBlock, stdRetVal, worldConfig, processNumber)) {
+                if(!this.hasLeaves(processNumber)) {
+                    this.clearProcess(processNumber);
+                    return;
+                }
+
+                for(Block block : this.checkedBlocks.get(processNumber)) {
                     if(block.getType() == Material.LOG) {
                         block.getWorld().dropItemNaturally(
-                                block.getLocation(), new ItemStack(Material.LOG, 1, (short)0,
+                                block.getLocation(),
+                                new ItemStack(Material.LOG, 1, (short)0,
                                         Byte.valueOf(block.getData())));
                         block.setType(Material.AIR);
                     }
                 }
-                if(worldConfig.getCreaturesToSpawn().size() > 0) {
-                    this.spawnCreature(firstBlock);
-                }
+
+                doAutoplantSapling = true;
             }
-        } else if (!worldConfig.isDestroyAllWood()) {
-            if (destroyTreeLeaves(firstBlock, returnValue, worldConfig)) {
-                for (Block block : this.checkedBlocks) {
-                    if (block.getType() != Material.SNOW) {
-                        dropLeaveItems(block);
+        } else if(worldConfig.isDestroyAll() && !worldConfig.isDestroyAllWood()) {
+            if(detectTreeWoodLeaves(firstBlock, stdRetVal, worldConfig, processNumber)) {
+                if(!this.hasLeaves(processNumber)) {
+                    this.clearProcess(processNumber);
+                    return;
+                }
+
+                for(Block block : this.checkedBlocks.get(processNumber)) {
+                    if(block.getType() != Material.SNOW) {
+                        this.dropLeaveItems(block);
                     }
                     block.setType(Material.AIR);
                 }
-                if(worldConfig.getCreaturesToSpawn().size() > 0) {
-                    this.spawnCreature(firstBlock);
-                }
             }
-        } else if (destroyTreeWood(firstBlock, returnValue, worldConfig)) {
-            // iConomy actions
-            if(worldConfig.isiConomySupport() && this.plugin.getiConomy() != null) {
-                if(player != null) {
-                    com.iConomy.system.Account account = iConomy.getAccount(player.getName());
-
-                    if(account != null) {
-                        com.iConomy.system.Holdings balance = account.getHoldings();
-
-                        if(balance.hasEnough(worldConfig.getiConomyMoneyOnFullDest())) {
-                            balance.subtract(worldConfig.getiConomyMoneyOnFullDest());
-                        } else {
-                            player.sendMessage(ChatColor.YELLOW + "You have not enough money to full destruct this tree.");
-                            return;
+        } else if(worldConfig.isDestroyAll() && worldConfig.isDestroyAllWood()) {
+            if(detectTreeWoodLeaves(firstBlock, stdRetVal, worldConfig, processNumber)) {
+                if(!this.hasLeaves(processNumber)) {
+                    this.clearProcess(processNumber);
+                    return;
+                }
+    
+                // iConomy stuff
+                if(worldConfig.isiConomySupport() && this.plugin.getiConomy() != null) {
+                    if(player != null) {
+                        com.iConomy.system.Account account = iConomy.getAccount(player.getName());
+    
+                        if(account != null) {
+                            com.iConomy.system.Holdings balance = account.getHoldings();
+    
+                            if(balance.hasEnough(worldConfig.getiConomyMoneyOnFullDest())) {
+                                balance.subtract(worldConfig.getiConomyMoneyOnFullDest());
+                            } else {
+                                player.sendMessage(ChatColor.YELLOW + "You have not enough money to full destruct this tree.");
+                                return;
+                            }
                         }
                     }
                 }
-            }
-
-            for (Block block : this.checkedBlocks) {
-                if (block.getType() == Material.LOG) {
-                    block.getWorld().dropItemNaturally(
-                            block.getLocation(), new ItemStack(Material.LOG, 1, (short)0,
-                                    Byte.valueOf(block.getData())));
-                }
-                if (block.getType() != Material.SNOW) {
-                    dropLeaveItems(block);
-                }
-                block.setType(Material.AIR);
-            }
-            if(worldConfig.getCreaturesToSpawn().size() > 0) {
-                this.spawnCreature(firstBlock);
-            }
-        }
-    }
-
-    public boolean destroyTreeLeaves(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig) {
-        return destroyTreeLeaves(currentBlock, ret, worldConfig, currentBlock);
-    }
-
-    public boolean destroyTreeLeaves(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig, Block startBlock) {
-        if (this.checkedBlocks.size() > worldConfig.getMaxTreeSize()) {
-            return false;
-        }
-
-        for (Location currCheckBlock : this.checkBlocks) {
-            Block relative = currentBlock.getRelative((int)currCheckBlock.getX(), (int)currCheckBlock.getY(), (int)currCheckBlock.getZ());
-
-            if(!this.checkTreeRadius(worldConfig.getMaxTreeRadius(), startBlock, relative)) {
-                continue;
-            }
-
-            if ((relative.getType() == Material.LEAVES)
-                    || (relative.getType() == Material.SNOW)) {
-                if (!this.checkedBlocks.contains(relative)) {
-                    this.checkedBlocksCounter++;
-                    this.checkedBlocks.add(relative);
-                    ret = destroyTreeLeaves(relative, ret, worldConfig, startBlock);
-                }  
-            } else if (relative.getType() != Material.AIR) {
-                ret = false;
-            }
-        }
-        
-        return ret;
-    }
-
-    public boolean destroyTreeWood(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig) {
-        return destroyTreeWood(currentBlock, ret, worldConfig, currentBlock);
-    }
-
-    public boolean destroyTreeWood(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig, Block startBlock) {
-        if (this.checkedBlocks.size() > worldConfig.getMaxTreeSize()) {
-            return false;
-        }
-
-        for (Location currCheckBlock : this.checkBlocks) {
-            Block relative = currentBlock.getRelative((int)currCheckBlock.getX(), (int)currCheckBlock.getY(), (int)currCheckBlock.getZ());
-
-            if(!this.checkTreeRadius(worldConfig.getMaxTreeRadius(), startBlock, relative)) {
-                continue;
-            }
-
-            if ((relative.getType() == Material.LEAVES)
-                    || (relative.getType() == Material.LOG)
-                    || (relative.getType() == Material.SNOW)) {
-                if (!this.checkedBlocks.contains(relative)) {
-                    this.checkedBlocksCounter++;
-                    this.checkedBlocks.add(relative);
-                    ret = destroyTreeWood(relative, ret, worldConfig, startBlock);
-                }
-            }
-            else if (relative.getType() != Material.AIR) {
-                ret = false;
-            }
-        }
-        
-        return ret;
-    }
-
-    public boolean destroyTreeWoodOnly(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig) {
-        return destroyTreeWoodOnly(currentBlock, ret, worldConfig, currentBlock);
-    }
-
-    public boolean destroyTreeWoodOnly(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig, Block startBlock) {
-        if (this.checkedBlocks.size() > worldConfig.getMaxTreeSize()) {
-            return false;
-        }
-
-        for (Location currCheckBlock : this.checkBlocks) {
-            Block relative = currentBlock.getRelative((int)currCheckBlock.getX(), (int)currCheckBlock.getY(), (int)currCheckBlock.getZ());
-
-            if(!this.checkTreeRadius(worldConfig.getMaxTreeRadius(), startBlock, relative)) {
-                continue;
-            }
-
-            if ((relative.getType() == Material.LEAVES)
-                    || (relative.getType() == Material.LOG)
-                    || (relative.getType() == Material.SNOW)) {
-                if (!this.checkedBlocks.contains(relative)) {
-                    this.checkedBlocksCounter++;
-                    if(relative.getType() == Material.LOG) {
-                        this.checkedBlocks.add(relative);
+    
+                for(Block block : this.checkedBlocks.get(processNumber)) {
+                    if(block.getType() == Material.LOG) {
+                        block.getWorld().dropItemNaturally(
+                                block.getLocation(),
+                                new ItemStack(Material.LOG, 1, (short)0,
+                                        Byte.valueOf(block.getData())));
+                    } else if(block.getType() != Material.SNOW) {
+                        this.dropLeaveItems(block);
                     }
-                    ret = destroyTreeWoodOnly(relative, ret, worldConfig, startBlock);
+
+                    block.setType(Material.AIR);
+                }
+
+                doAutoplantSapling = true;
+            }
+        } else { // if !worldConfig.isDestroyAll() and !worldConfig.isDestroyAllWood()
+            // Do nothing
+        }
+
+        if(doAutoplantSapling) {
+            if(worldConfig.isAutoplantSapling()) {
+                //TODO Check for the last block before ground block, check if it's type is
+                //TODO dirt/grass and start the plantSapling method (this.plantSapling())
+                //TODO ONLY PLANT IF THE REALLY ALL BLOCKS OF THE TYPES ARE DESTROYED
+            }
+        }
+
+        if(worldConfig.getCreaturesToSpawn().size() > 0) {
+            this.spawnCreature(firstBlock);
+        }
+
+        this.clearProcess(processNumber);
+    }
+
+    public boolean detectTreeWoodLeaves(Block currentBlock, boolean retVal, LyTreeHelperConfiguration worldConfig, int processNumber) {
+        return detectTreeWoodLeaves(currentBlock, retVal, worldConfig, processNumber, currentBlock);
+    }
+
+    public boolean detectTreeWoodLeaves(Block currentBlock, boolean retVal, LyTreeHelperConfiguration worldConfig, int processNumber, Block startBlock) {
+        if(this.checkedBlocks.get(processNumber).size() > worldConfig.getMaxTreeSize()) {
+            return false;
+        }
+
+        for(Location checkBlock : this.checkBlocks) {
+            Block relBlock = currentBlock.getRelative(
+                    (int)checkBlock.getX(),
+                    (int)checkBlock.getY(),
+                    (int)checkBlock.getZ());
+
+            if(!this.checkTreeRadius(worldConfig.getMaxTreeRadius(), startBlock, currentBlock)) {
+                continue;
+            }
+
+            if((relBlock.getType() == Material.LEAVES)
+                    || (relBlock.getType() == Material.LOG)
+                    || (relBlock.getType() == Material.SNOW)) {
+                if(relBlock.getType() == Material.LEAVES) {
+                    this.hasLeaves.put(processNumber, true);
+                }
+
+                if(!this.checkedBlocks.get(processNumber).contains(relBlock)) {
+                    this.checkedBlocksCounter++;
+                    this.checkedBlocks.get(processNumber).add(relBlock);
+
+                    retVal = detectTreeWoodLeaves(relBlock, retVal, worldConfig, processNumber, startBlock);
+                }
+            } else if(!this.blocksToIgnore.contains(relBlock.getType())) {
+                retVal = false;
+            }
+        }
+
+        return retVal;
+    }
+
+    public boolean detectTreeWood(Block currentBlock, boolean ret, LyTreeHelperConfiguration worldConfig, int processNumber) {
+        return detectTreeWood(currentBlock, ret, worldConfig, processNumber, currentBlock);
+    }
+
+    public boolean detectTreeWood(Block currentBlock, boolean retVal, LyTreeHelperConfiguration worldConfig, int processNumber, Block startBlock) {
+        if(this.checkedBlocks.get(processNumber).size() > worldConfig.getMaxTreeSize()) {
+            return false;
+        }
+
+        for(Location checkBlock : this.checkBlocks) {
+            Block relBlock = currentBlock.getRelative(
+                    (int)checkBlock.getX(),
+                    (int)checkBlock.getY(),
+                    (int)checkBlock.getZ());
+
+            if(!this.checkTreeRadius(worldConfig.getMaxTreeRadius(), startBlock, relBlock)) {
+                continue;
+            }
+
+            if((relBlock.getType() == Material.LEAVES)
+                    || (relBlock.getType() == Material.SNOW)
+                    || (relBlock.getType() == Material.LOG)) {
+                if(relBlock.getType() == Material.LEAVES) {
+                    this.hasLeaves.put(processNumber, true);
+                }
+
+                if(!this.checkedBlocks.get(processNumber).contains(relBlock)) {
+                    this.checkedBlocksCounter++;
+
+                    if(relBlock.getType() == Material.LOG) {
+                        this.checkedBlocks.get(processNumber).add(relBlock);
+                    }
+
+                    retVal = detectTreeWood(relBlock, retVal, worldConfig, processNumber, startBlock);
                 }
             }
         }
-        
-        return ret;
+        return retVal;
     }
-
+    
     private boolean checkTreeRadius(int maxRadius, Block startBlock, Block currentBlock) {
         if(maxRadius > 0) {
             if ((currentBlock.getX() <= startBlock.getX() + maxRadius)
@@ -294,88 +337,81 @@ public class LyTreeHelperBlockListener extends BlockListener {
 
         LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(event.getBlock().getWorld().getName());
 
-        if (event.getBlock().getType() == Material.LEAVES) {
-            if (worldConfig.isDestroyAll()) {
+        boolean destrAllowed = false;
+
+        if(event.getBlock().getType() == Material.LEAVES) {
+            if(worldConfig.isDestroyAll()) {
                 if(!this.plugin.hasPermission(event.getPlayer(), "destroyall")) {
                     return;
                 }
 
-                if (worldConfig.getDestructionTools().size() > 0) {
-                    for (int destructionTool : worldConfig.getDestructionTools()) {
-                        if (event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
-                            destroyTree(event.getPlayer(), event.getBlock());
+                if(worldConfig.getDestructionTools().size() > 0) {
+                    for(int destructionTool : worldConfig.getDestructionTools()) {
+                        if(event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
+                            this.destroyTree(event.getPlayer(), event.getBlock());
                         }
                     }
                 } else {
-                    destroyTree(event.getPlayer(), event.getBlock());
+                    this.destroyTree(event.getPlayer(), event.getBlock());
                 }
-            } else if (worldConfig.isDestroyFaster()) {
-                fasterDecay(event.getBlock());
+            } else if(worldConfig.isDestroyFaster()) {
+                this.fasterDecay(event.getBlock());
             }
-            if (worldConfig.getHarvestTools().size() > 0) {
-                for (int harvestTool : worldConfig.getHarvestTools()) {
-                    if (event.getPlayer().getItemInHand().getTypeId() == harvestTool) {
-                        dropLeaveItems(event.getBlock());
+
+            if(worldConfig.getHarvestTools().size() > 0) {
+                for(int harvestTool : worldConfig.getHarvestTools()) {
+                    if(event.getPlayer().getItemInHand().getTypeId() == harvestTool) {
+                        this.dropLeaveItems(event.getBlock());
                         break;
                     }
                 }
             } else {
-                dropLeaveItems(event.getBlock());
+                this.dropLeaveItems(event.getBlock());
             }
         } else if ((event.getBlock().getType() == Material.LOG)
-                && (worldConfig.isDestroyAll()) && (worldConfig.isDestroyAllWood())) {
-            if(!this.plugin.hasPermission(event.getPlayer(), "destroyall")) {
-                return;
-            }
-
-            boolean destructionAllowed = false;
-
-            if (worldConfig.getDestructionTools().size() > 0) {
-                for (int destructionTool : worldConfig.getDestructionTools()) {
-                    if (event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
-                        destructionAllowed = true;
-                    }
-                }
-            } else {
-                destructionAllowed = true;
-            }
-            
-            if(destructionAllowed) {
-                //event.setCancelled(true);
-                ItemStack stack = new ItemStack(Material.LOG, 1, (short)0, Byte.valueOf(event.getBlock().getData()));
-                event.getBlock().setType(Material.AIR);
-                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
-                destroyTree(event.getPlayer(), event.getBlock().getRelative(0, 1, 0));
-            }
-        } else if ((event.getBlock().getType() == Material.LOG)
+                && (worldConfig.isDestroyAll())
                 && (worldConfig.isDestroyAllWood())) {
             if(!this.plugin.hasPermission(event.getPlayer(), "destroyall")) {
                 return;
             }
 
-            boolean destructionAllowed = false;
-
-            if (worldConfig.getDestructionTools().size() > 0) {
-                for (int destructionTool : worldConfig.getDestructionTools()) {
-                    if (event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
-                        destructionAllowed = true;
+            if(worldConfig.getDestructionTools().size() > 0) {
+                for(int destructionTool : worldConfig.getDestructionTools()) {
+                    if(event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
+                        destrAllowed = true;
                     }
                 }
             } else {
-                destructionAllowed = true;
+                destrAllowed = true;
             }
-            
-            if(destructionAllowed) {
-                //event.setCancelled(true);
-                ItemStack stack = new ItemStack(Material.LOG, 1, (short)0, Byte.valueOf(event.getBlock().getData()));
-                event.getBlock().setType(Material.AIR);
-                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
-                destroyTree(event.getPlayer(), event.getBlock().getRelative(0, 1, 0));
+        } else if((event.getBlock().getType() == Material.LOG)
+                && (worldConfig.isDestroyAllWood())) {
+            if(!this.plugin.hasPermission(event.getPlayer(), "destroyall")) {
+                return;
             }
+
+            if(worldConfig.getDestructionTools().size() > 0) {
+                for(int destructionTool : worldConfig.getDestructionTools()) {
+                    if(event.getPlayer().getItemInHand().getTypeId() == destructionTool) {
+                        destrAllowed = true;
+                    }
+                }
+            } else {
+                destrAllowed = true;
+            }
+        }
+
+        if(destrAllowed) {
+            // event.setCancelled(true);
+            ItemStack stack = new ItemStack(Material.LOG, 1, (short)0,
+                    Byte.valueOf(event.getBlock().getData()));
+            event.getBlock().setType(Material.AIR);
+            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stack);
+            this.destroyTree(event.getPlayer(), event.getBlock().getRelative(0, 1, 0));
         }
     }
 
-    public void dropLeaveItems(Block block) {
+    private void dropLeaveItems(Block block) {
         LyTreeHelperConfiguration worldConfig = this.plugin.getWorldConfig(block.getWorld().getName());
 
         if(worldConfig.isOnlyTopDown()) {
@@ -388,7 +424,7 @@ public class LyTreeHelperBlockListener extends BlockListener {
 
         Random generator = new Random();
         int rand = generator.nextInt(10000);
-        
+
         if (rand >= (10000.0 - (worldConfig.getAppleChance() * 100.0))) {
             block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.APPLE, 1));
         }
@@ -427,45 +463,63 @@ public class LyTreeHelperBlockListener extends BlockListener {
             Object[] creatures = worldConfig.getCreaturesToSpawn().toArray();
             //Pick the monster to spawn.
             String creature = (String)creatures[generator.nextInt(creatures.length)];
-            System.out.println("Spawning mob: " + creature);
+            //System.out.println("Spawning mob: " + creature);
+            @SuppressWarnings("unused")
             SpawnMob themob = new SpawnMob(this.plugin.getServer(), firstBlock, creature);
         }
     }
 
+    /**
+     * Type has to be 0, 1 or 2: 0 -> usual sapling, 1 -> spruce sapling, 2 -> birch sapling)
+     * (NOT !!! data has to be da data of the log block ( block.getData() )
+     * Location must be the location of the sapling, NOT the grass/dirt block below it.
+     * 
+     * @param location
+     * @param type
+     */
+    private void plantSapling(Location location, short type ) {
+    //private void plantSapling(Location location, Byte data) {
+        Block block = location.getBlock();
+
+        if(block.getRelative(BlockFace.DOWN).getType() == Material.DIRT
+                || block.getRelative(BlockFace.DOWN).getType() == Material.GRASS) {
+            type = (type < 0 || type > 2) ? 0 : type;
+
+            block.setType(Material.SAPLING);
+
+            Byte saplingData = block.getData();
+            switch(type) {
+            case 1:
+                saplingData = (byte)(saplingData | (1 << 0));
+                break;
+            case 2:
+                saplingData = (byte)(saplingData | (1 << 1));
+                break;
+            }
+            block.setData(saplingData);
+            //block.setData(data);
+        }
+    }
+    
     public boolean isGroundConnection(Block block) {
         return isGroundConnection(block, false, new ArrayList<Block>());
     }
-    /*public boolean isGroundConnection(Block block, boolean def, List<Block> alreadyChecked) {
-        for (Location iterator : this.checkBlocks) {
-            Block relative = block.getRelative((int)iterator.getX(), (int)iterator.getY(), (int)iterator.getZ());
-            if ((relative.getType() == Material.LEAVES)
-                    || (relative.getType() == Material.LOG)
-                    || (relative.getType() == Material.SNOW)) {
-                if (!alreadyChecked.contains(relative)) {
-                    alreadyChecked.add(relative);
-                    def = isGroundConnection(relative, def, alreadyChecked);
-                }  
-            } else if (relative.getType() != Material.AIR) {
-                def = true;
-            }
-        }
-        return def;
-    }*/
+
     public boolean isGroundConnection(Block block, boolean def, List<Block> alreadyChecked) {
         if(alreadyChecked.size() >= this.plugin.getWorldConfig(block.getWorld().getName()).getMaxTreeSize()) {
             return true;
         }
 
         for (Location iterator : this.checkBlocks) {
-            Block relative = block.getRelative((int)iterator.getX(), (int)iterator.getY(), (int)iterator.getZ());
-            if ((relative.getType() == Material.LEAVES)
-                    || (relative.getType() == Material.LOG)
-                    || (relative.getType() == Material.SNOW)) {
-                if (!alreadyChecked.contains(relative)) {
-                    alreadyChecked.add(relative);
-                    def = isGroundConnection(relative, def, alreadyChecked);
+            Block relBlock = block.getRelative((int)iterator.getX(), (int)iterator.getY(), (int)iterator.getZ());
+            if ((relBlock.getType() == Material.LEAVES)
+                    || (relBlock.getType() == Material.LOG)
+                    || (relBlock.getType() == Material.SNOW)) {
+                if (!alreadyChecked.contains(relBlock)) {
+                    alreadyChecked.add(relBlock);
+                    def = isGroundConnection(relBlock, def, alreadyChecked);
                 }  
-            } else if (relative.getType() != Material.AIR) {
+            } else if (!this.blocksToIgnore.contains(relBlock.getType())) {
                 def = true;
             }
         }

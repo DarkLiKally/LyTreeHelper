@@ -37,6 +37,9 @@ enable-full-tree-destruction: on
 # Enables or disables the full destruction of the tree wood.
 enable-full-wood-destruction: on
 
+# Enables or disables auto planting of an sapling on full destruction or full wood destruction only.
+enable-autoplant-sapling: off
+
 # Leaveblocks drops their items only if the player harvests the tree from top to bottom
 # That means, the block above the harvested block must be air
 enable-only-top-down-drops: off
@@ -61,13 +64,12 @@ max-tree-radius: 5
 enable-iconomy-support: off
 iconomy-money-on-full-destruction: 10.0
 
-# NOTE: The following 2 options are not working in this version
 # Enable apple-drops over time?
 # If enabled, LyTreeHelper will cause apple drops from trees over time.
 # Don't forget to set the drop chance!
 # "apple-drops-over-time-chance" must be a double from 0.0 to 100.0
 enable-apple-drops-over-time: on
-apple-drops-over-time-chance: 5.0
+apple-drops-over-time-chance: 1.0
 
 # This option works only if both "enable-full-tree-destruction" and "enable-full-wood-destruction" are set to on/true.
 # If you destroy a tree, one creature in this list will spawn at the location of the destroyed tree.

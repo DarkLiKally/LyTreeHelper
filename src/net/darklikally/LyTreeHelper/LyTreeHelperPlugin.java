@@ -26,6 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+import net.darklikally.LyTreeHelper.editor.EditSession;
+
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -49,6 +51,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
 
     private final LyTreeHelperBlockListener blockListener = new LyTreeHelperBlockListener(this);
     private final LyTreeHelperServerListener serverListener = new LyTreeHelperServerListener(this);
+    private final LyTreeHelperPlayerListener playerListener = new LyTreeHelperPlayerListener(this);
 
     private Map<String, LyTreeHelperConfiguration> worldConfigurations;
 
@@ -59,6 +62,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     String pluginDir = "plugins/LyTreeHelper/";
 
     public PermissionHandler Permissions;
+
+    private HashMap<String, EditSession> editSessions =
+        new HashMap<String, EditSession>();
 
     public Logger getLogger() {
         return logger;
@@ -76,9 +82,10 @@ public class LyTreeHelperPlugin extends JavaPlugin {
 
         this.blockListener.registerEvents();
         this.serverListener.registerEvents();
+        this.playerListener.registerEvents();
 
         // 25 ticks = about 1 second
-        this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDropTimer(this), 0, 50);
+        this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDropTimer(this), 1500, 1500);
 
         this.worldConfigurations = new HashMap<String, LyTreeHelperConfiguration>();
         this.worldConfigurations.clear();
@@ -174,6 +181,42 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         }
 
         return ret;
+    }
+
+    public EditSession getEditSession(Player player) {
+        return this.getEditSession(player.getName());
+    }
+
+    public EditSession getEditSession(String playerName) {
+        if(!this.editSessions.containsKey(playerName)) {
+            Player player = this.getServer().getPlayer(playerName);
+            return this.createEditSession(player, true);
+        } else {
+            return this.editSessions.get(playerName);
+        }
+    }
+
+    public EditSession createEditSession(Player player, boolean pluginEnabled) {
+        if(!this.editSessions.containsKey(player.getName())) {
+            this.editSessions.put(player.getName(),
+                    new EditSession(player, pluginEnabled));
+        }
+        return this.editSessions.get(player.getName());
+    }
+
+    public void removeEditSession(Player player) {
+        this.removeEditSession(player.getName());
+    }
+
+    public void removeEditSession(String playerName) {
+        this.editSessions.remove(playerName);
+    }
+
+    public boolean isPluginEnabledFor(String playerName) {
+        if(this.editSessions.containsKey(playerName)) {
+            return this.editSessions.get(playerName).isPluginEnabled();
+        }
+        return true;
     }
 
     public double cutOff(float value) {

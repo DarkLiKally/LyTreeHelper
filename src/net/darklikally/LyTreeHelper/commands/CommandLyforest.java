@@ -53,7 +53,7 @@ public class CommandLyforest extends LyTreeHelperCommand {
         }
         Player player = (Player) sender;
 
-        if(!plugin.hasPermission(player, "generate.forests")) {
+        if(!plugin.getPermissions().hasPermission(player, "generate.forests")) {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
             return true;
         }

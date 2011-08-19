@@ -22,20 +22,18 @@ package net.darklikally.LyTreeHelper;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+import net.darklikally.LyTreeHelper.Listeners.LyTreeHelperBlockListener;
+import net.darklikally.LyTreeHelper.Listeners.LyTreeHelperPlayerListener;
+import net.darklikally.LyTreeHelper.Listeners.LyTreeHelperServerListener;
 import net.darklikally.LyTreeHelper.editor.EditSession;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import com.iConomy.*;
+import com.nijikokun.register.payment.Method;
 
 /**
  *
@@ -43,29 +41,73 @@ import com.iConomy.*;
  */
 public class LyTreeHelperPlugin extends JavaPlugin {
 
+    /**
+     * The global LyTreeHelper logger
+     */
     private static final Logger logger = Logger.getLogger("Minecraft.LyTreeHelper");
 
+    /**
+     * The command handler
+     */
     protected final LyTreeHelperCommands commandHandler = new LyTreeHelperCommands(this);
 
-    private iConomy iConomy = null;
-
-    private final LyTreeHelperBlockListener blockListener = new LyTreeHelperBlockListener(this);
+    /**
+     * The listeners (events registered inside the listeners)
+     */
     private final LyTreeHelperServerListener serverListener = new LyTreeHelperServerListener(this);
     private final LyTreeHelperPlayerListener playerListener = new LyTreeHelperPlayerListener(this);
+    private final LyTreeHelperBlockListener blockListener = new LyTreeHelperBlockListener(this);
 
+    /**
+     * The plugin's directory
+     */
+    private String pluginDir = "plugins/LyTreeHelper/";
+    
+    /**
+     * The world configuration directory
+     */
+    private String configDir = "plugins/LyTreeHelper/worlds/";
+    
+    /**
+     * The forest database directory
+     */
+    private String forestDbDir = this.pluginDir;
+
+    /**
+     * A map consisting of all configuration objects for the worlds.
+     */
     private Map<String, LyTreeHelperConfiguration> worldConfigurations;
 
+    /**
+     * The forest database
+     */
     private net.darklikally.LyTreeHelper.database.Database database;
 
+    /**
+     * This HashMap contains all the debugees (Name - Debug enabled?)
+     */
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
 
-    String pluginDir = "plugins/LyTreeHelper/";
+    /**
+     *  The handler for permissions plugin
+     */
+    public LyTreeHelperPermissions Permissions = new LyTreeHelperPermissions(this);
 
-    public PermissionHandler Permissions;
+    /**
+     * The Register Method
+     */
+    private Method economy = null;
 
+    /**
+     * The active editSessions (Playername - EditSession object)
+     */
     private HashMap<String, EditSession> editSessions =
         new HashMap<String, EditSession>();
 
+    /**
+     * Returns the global logger for LyTreeHelper
+     * @return
+     */
     public Logger getLogger() {
         return logger;
     }
@@ -76,28 +118,33 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     public void onEnable() {
         getDataFolder().mkdirs();
 
-        setupPermissions();
-
+        // Register the commands
         this.commandHandler.registerCommands();
 
-        this.blockListener.registerEvents();
+        // Register the neccessary events
         this.serverListener.registerEvents();
         this.playerListener.registerEvents();
+        this.blockListener.registerEvents();
 
-        // 25 ticks = about 1 second
-        this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDropTimer(this), 1500, 1500);
-
+        // Clear the world configurations on startup / reload
         this.worldConfigurations = new HashMap<String, LyTreeHelperConfiguration>();
         this.worldConfigurations.clear();
 
-        this.database = new net.darklikally.LyTreeHelper.database.Database(this,
-                new File(this.getDataFolder(), "db.yml"));
-
+        // Load the world Configurations
         for (World world : this.getServer().getWorlds()) {
             String worldName = world.getName();
             this.worldConfigurations.put(worldName, createWorldConfig(worldName));
         }
 
+        // Setup the forest database
+        this.database = new net.darklikally.LyTreeHelper.database.Database(this,
+                new File(this.getDataFolder(), "db.yml"));
+        
+        // Setup the Timer for the timed apple drops
+        // 25 ticks = about 1 second
+        this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDropTimer(this), 1500, 1500);
+
+        // Tell the server admins that our plugin is enabled
         logger.info("[LyTreeHelper] LyTreeHelper " + this.getDescription().getVersion() + " enabled.");
     }
 
@@ -105,74 +152,57 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * Called on plugin disable.
      */
     public void onDisable() {
+        this.economy = null;
+        // Tell the server admins that our plugin is disabled
         logger.info("[LyTreeHelper] LyTreeHelper " + this.getDescription().getVersion() + " disabled.");
     }
 
-    public iConomy getiConomy() {
-        return this.iConomy;
+    /**
+     * Returns the permissions handler
+     * @return
+     */
+    public LyTreeHelperPermissions getPermissions() {
+        return this.Permissions;
     }
 
+    /**
+     * Returns the Register Method
+     * @return
+     */
+    public Method getEconomy() {
+        return this.economy;
+    }
+
+    /**
+     * We can set the Register economy Method.
+     * @param value
+     */
+    public void setEconomy(Method value) {
+        this.economy = value;
+    }
+
+    /**
+     * Returns the LyTreeHelper (LTH) forest database
+     * @return
+     */
     public net.darklikally.LyTreeHelper.database.Database getLTHDatabase() {
         return this.database;
     }
 
-    public void setiConomy(iConomy value) {
-        this.iConomy = value;
-    }
-
+    /**
+     * This method creates a new LyTreeHelperConfiguration for the requested world. 
+     * @param world
+     * @return
+     */
     private LyTreeHelperConfiguration createWorldConfig(String world) {
         return new LyTreeHelperConfiguration(this, world, new File(this.getDataFolder(), world + ".yml"));
     }
 
-    private void setupPermissions() {
-        Plugin test = this.getServer().getPluginManager().getPlugin("Permissions");
-
-        if (this.Permissions == null) {
-            if (test != null) {
-                this.Permissions = ((Permissions)test).getHandler();
-                logger.log(Level.INFO, "[LyTreeHelper] Permission plugin detected, using Permissions plugin for permissions.");
-                
-            } else {
-                logger.log(Level.INFO, "[LyTreeHelper] Permission plugin not detected.");
-            }
-        }
-    }
-
-    public boolean hasPermission(Player player, String permission) {
-        try {
-            if(this.Permissions != null) {
-                if (!this.Permissions.has(player, "lytreehelper." + permission) && !player.isOp()) {
-                    return false;
-                } else return true;
-            } else if (player.isOp()) {
-                return true;
-            } else {
-                return true;
-            }
-        } catch (Throwable t) {
-            //t.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean inGroup(String world, String player, String group) {
-        try {
-            return this.Permissions.inGroup(world, player, group);
-        } catch (Throwable t) {
-            //t.printStackTrace();
-            return false;
-        }
-    }
-
-    public String[] getGroups(String world, String player) {
-        try {
-            return this.Permissions.getGroups(world, player);
-        } catch (Throwable t) {
-            //t.printStackTrace();
-            return new String[0];
-        }
-    }
-
+    /**
+     * Returns the LyTreeHelperConfiguration for the given world name.
+     * @param world
+     * @return
+     */
     public LyTreeHelperConfiguration getWorldConfig(String world) {
         LyTreeHelperConfiguration ret = this.worldConfigurations.get(world);
         if (ret == null) {
@@ -183,10 +213,51 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         return ret;
     }
 
+    /**
+     * Creates an EditSession for a Player.
+     * Note: You must set whether the plugin is enabled for this Player.
+     * @param player
+     * @param pluginEnabled
+     * @return
+     */
+    public EditSession createEditSession(Player player, boolean pluginEnabled) {
+        if(!this.editSessions.containsKey(player.getName())) {
+            this.editSessions.put(player.getName(),
+                    new EditSession(player, pluginEnabled));
+        }
+        return this.editSessions.get(player.getName());
+    }
+
+    /**
+     * Removes the EditSession for a Player.
+     * @param player
+     */
+    public void removeEditSession(Player player) {
+        this.removeEditSession(player.getName());
+    }
+
+    /**
+     * Removes the EditSession for a player.
+     * @param playerName
+     */
+    public void removeEditSession(String playerName) {
+        this.editSessions.remove(playerName);
+    }
+
+    /**
+     * Returns the EditSession for a Player.
+     * @param player
+     * @return
+     */
     public EditSession getEditSession(Player player) {
         return this.getEditSession(player.getName());
     }
 
+    /**
+     * Returns the EditSession for a player.
+     * @param playerName
+     * @return
+     */
     public EditSession getEditSession(String playerName) {
         if(!this.editSessions.containsKey(playerName)) {
             Player player = this.getServer().getPlayer(playerName);
@@ -196,22 +267,11 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         }
     }
 
-    public EditSession createEditSession(Player player, boolean pluginEnabled) {
-        if(!this.editSessions.containsKey(player.getName())) {
-            this.editSessions.put(player.getName(),
-                    new EditSession(player, pluginEnabled));
-        }
-        return this.editSessions.get(player.getName());
-    }
-
-    public void removeEditSession(Player player) {
-        this.removeEditSession(player.getName());
-    }
-
-    public void removeEditSession(String playerName) {
-        this.editSessions.remove(playerName);
-    }
-
+    /**
+     * Returns true if all LyTreeHelper features are enabled for the player with the name playerName.
+     * @param playerName
+     * @return
+     */
     public boolean isPluginEnabledFor(String playerName) {
         if(this.editSessions.containsKey(playerName)) {
             return this.editSessions.get(playerName).isPluginEnabled();
@@ -219,12 +279,22 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         return true;
     }
 
+    /**
+     * Cuts off a float value (Return mask: [[0]0]0.00)
+     * @param value
+     * @return
+     */
     public double cutOff(float value) {
         double newValue = (int)(value * 100.0);
         newValue /= 100.0;
         return newValue;
     }
 
+    /**
+     * Returns true if debugging is enabled for Player.
+     * @param player
+     * @return
+     */
     public boolean isDebugging(Player player) {
         if (this.debugees.containsKey(player)) {
             return ((Boolean)this.debugees.get(player)).booleanValue();
@@ -232,6 +302,11 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         return false;
     }
 
+    /**
+     * Sets the debugging for Player.
+     * @param player
+     * @param value
+     */
     public void setDebugging(Player player, boolean value){
         this.debugees.put(player, Boolean.valueOf(value));
     }

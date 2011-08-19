@@ -50,7 +50,7 @@ public class CommandLyforestdb extends LyTreeHelperCommand {
         }
         Player player = (Player) sender;
 
-        if(!plugin.hasPermission(player, "db.blockaccess")) {
+        if(!plugin.getPermissions().hasPermission(player, "db.blockaccess")) {
             sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
             return true;
         }
@@ -61,7 +61,7 @@ public class CommandLyforestdb extends LyTreeHelperCommand {
         }
 
         if(args[0].equalsIgnoreCase("list")) {
-            if(!plugin.hasPermission(player, "db.forestlist")) {
+            if(!plugin.getPermissions().hasPermission(player, "db.forestlist")) {
                 sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
                 return true;
             }
@@ -101,7 +101,7 @@ public class CommandLyforestdb extends LyTreeHelperCommand {
             
             return true;
         } else if(args[0].equalsIgnoreCase("register")) {
-            if(!plugin.hasPermission(player, "db.registerforest")) {
+            if(!plugin.getPermissions().hasPermission(player, "db.registerforest")) {
                 sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
                 return true;
             }
@@ -161,7 +161,7 @@ public class CommandLyforestdb extends LyTreeHelperCommand {
             return true;
             
         } else if(args[0].equalsIgnoreCase("delete")) {
-            if(!plugin.hasPermission(player, "db.deleteforest")) {
+            if(!plugin.getPermissions().hasPermission(player, "db.deleteforest")) {
                 sender.sendMessage(ChatColor.DARK_RED + "You don't have sufficient permissions for this action!");
                 return true;
             }

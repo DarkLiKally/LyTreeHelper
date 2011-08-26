@@ -17,7 +17,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.darklikally.minecraft.utils;
+package net.darklikally.minecraft.utils.generator;
 
 import java.util.Random;
 

@@ -7,12 +7,20 @@
 	<property name="release.dir" location="release" />
 	<property name="lib.dir" location="lib" />
 	<property name="docs.dir" location="docs" />
+	<property name="bob2.dir" location="bo2" />
 
 	<fileset id="libs" dir="${lib.dir}">
 		<include name="Bukkit.jar" />
 		<include name="Craftbukkit.jar" />
-		<include name="iConomy.jar" />
 		<include name="Permissions.jar" />
+		<include name="BOSEconomy7.jar" />
+		<include name="Essentials.jar" />
+		<include name="iCo4.jar" />
+		<include name="iCo5.jar" />
+		<include name="iCo6.jar" />
+		<include name="MultiCurrency.jar" />
+		<include name="WorldGuard.jar" />
+		<include name="WorldEdit.jar" />
 	</fileset>
 
 	<target name="init">
@@ -82,6 +90,7 @@
 			<zipfileset dir="." includes="CHANGELOG.txt" fullpath="CHANGELOG.txt" />
 			<zipfileset dir="${dist.dir}" includes="*.jar" />
 			<zipfileset dir="." includes="config.yml" prefix="LyTreeHelper/" />
+			<zipfileset dir="${bob2.dir}" includes="*.bo2" prefix="LyTreeHelper/bo2 trees/" />
 		</zip>
 		<zip destfile="${release.dir}/LyTreeHelper-src-${version}.zip">
 			<zipfileset dir="." includes="README.txt" fullpath="README.txt" />

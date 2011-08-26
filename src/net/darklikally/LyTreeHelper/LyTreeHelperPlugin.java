@@ -24,16 +24,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import net.darklikally.LyTreeHelper.Listeners.LyTreeHelperBlockListener;
-import net.darklikally.LyTreeHelper.Listeners.LyTreeHelperPlayerListener;
-import net.darklikally.LyTreeHelper.Listeners.LyTreeHelperServerListener;
+import net.darklikally.LyTreeHelper.BOB2.BOB2Manager;
+import net.darklikally.LyTreeHelper.BOB2.BOB2Populator;
 import net.darklikally.LyTreeHelper.editor.EditSession;
+import net.darklikally.LyTreeHelper.listeners.LyTreeHelperBlockListener;
+import net.darklikally.LyTreeHelper.listeners.LyTreeHelperPlayerListener;
+import net.darklikally.LyTreeHelper.listeners.LyTreeHelperServerListener;
+import net.darklikally.LyTreeHelper.listeners.LyTreeHelperWorldListener;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nijikokun.register.payment.Method;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 /**
  *
@@ -50,11 +54,22 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * The command handler
      */
     protected final LyTreeHelperCommands commandHandler = new LyTreeHelperCommands(this);
+    
+    /**
+     * The command manager
+     */
+    protected net.darklikally.minecraft.utils.commands.CommandManager<Player> commandManager;
 
+    /**
+     * BOB2 Tree Populator
+     */
+    private BOB2Populator treePopulator = null;
+    
     /**
      * The listeners (events registered inside the listeners)
      */
     private final LyTreeHelperServerListener serverListener = new LyTreeHelperServerListener(this);
+    private final LyTreeHelperWorldListener worldListener = new LyTreeHelperWorldListener(this);
     private final LyTreeHelperPlayerListener playerListener = new LyTreeHelperPlayerListener(this);
     private final LyTreeHelperBlockListener blockListener = new LyTreeHelperBlockListener(this);
 
@@ -91,12 +106,17 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     /**
      *  The handler for permissions plugin
      */
-    public LyTreeHelperPermissions Permissions = new LyTreeHelperPermissions(this);
+    public LyTreeHelperPermissions Permissions = null;
 
     /**
      * The Register Method
      */
     private Method economy = null;
+    
+    /**
+     * The WorldGuardPlugin
+     */
+    private WorldGuardPlugin worldGuard = null;
 
     /**
      * The active editSessions (Playername - EditSession object)
@@ -117,12 +137,31 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     public void onEnable() {
         getDataFolder().mkdirs();
+        
+        // Setup Permissions
+        this.Permissions = new LyTreeHelperPermissions(this);
 
-        // Register the commands
+        // Init the commandManager
+        this.commandManager = new net.darklikally.minecraft.utils.commands.CommandManager<Player>(this) {
+            @Override
+            public boolean hasPermission(Player player, String perm) {
+                return this.plugin.getPermissions().hasPermission(player, perm, false, false);
+            }
+        };
+        
+        // Register the commands to the commandManager
+        this.commandManager.register(net.darklikally.LyTreeHelper.commands.ForestCommands.class);
+        
+        // Set the command executor to the commandHandler
         this.commandHandler.registerCommands();
+
+        // Setup the BOB 2 Tree Populator and the BOB2Manager
+        this.treePopulator = new BOB2Populator();
+        BOB2Manager.init(this, this.pluginDir + "bo2 trees/");
 
         // Register the neccessary events
         this.serverListener.registerEvents();
+        this.worldListener.registerEvents();
         this.playerListener.registerEvents();
         this.blockListener.registerEvents();
 
@@ -143,7 +182,13 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         // Setup the Timer for the timed apple drops
         // 25 ticks = about 1 second
         this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDropTimer(this), 1500, 1500);
+        
+        // BETA: Add Custom Tree Populator to each world
+        for(World world : this.getServer().getWorlds()) {
+            world.getPopulators().add(this.treePopulator);
+        }
 
+        
         // Tell the server admins that our plugin is enabled
         logger.info("[LyTreeHelper] LyTreeHelper " + this.getDescription().getVersion() + " enabled.");
     }
@@ -152,6 +197,13 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * Called on plugin disable.
      */
     public void onDisable() {
+
+        
+        // BETA: Remove Custom Tree Populator to each world
+        for(World world : this.getServer().getWorlds()) {
+            world.getPopulators().remove(this.treePopulator);
+        }
+        
         this.economy = null;
         // Tell the server admins that our plugin is disabled
         logger.info("[LyTreeHelper] LyTreeHelper " + this.getDescription().getVersion() + " disabled.");
@@ -179,6 +231,38 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     public void setEconomy(Method value) {
         this.economy = value;
+    }
+    
+    /**
+     * Returns the WorldGuardPlugin.
+     * @return
+     */
+    public WorldGuardPlugin getWorldGuard() {
+        return this.worldGuard;
+    }
+    
+    /**
+     * We can set the WorldGuardPlugin.
+     * @param value
+     */
+    public void setWorldGuard(WorldGuardPlugin value) {
+        this.worldGuard = value;
+    }
+    
+    /**
+     * Returns the command manager
+     * @return
+     */
+    public net.darklikally.minecraft.utils.commands.CommandManager<Player> getCommandManager() {
+        return this.commandManager;
+    }
+    
+    /**
+     * Returns the BOB2 Tree Populator
+     * @return
+     */
+    public BOB2Populator getTreePopulator() {
+        return this.treePopulator;
     }
 
     /**

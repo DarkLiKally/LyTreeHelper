@@ -21,19 +21,19 @@ package net.darklikally.LyTreeHelper.listeners;
 
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
 
+import org.bukkit.World;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldInitEvent;
+import org.bukkit.event.world.WorldListener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.PluginManager;
 
 /**
  *
  * @author DarkLiKally
  */
-public class LyTreeHelperPlayerListener extends PlayerListener {
+public class LyTreeHelperWorldListener extends WorldListener {
     /**
      * Plugin.
      */
@@ -44,30 +44,31 @@ public class LyTreeHelperPlayerListener extends PlayerListener {
      * 
      * @param plugin
      */
-    public LyTreeHelperPlayerListener(LyTreeHelperPlugin plugin) {
+    public LyTreeHelperWorldListener(LyTreeHelperPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void registerEvents() {
         PluginManager pm = plugin.getServer().getPluginManager();
 
-        pm.registerEvent(Event.Type.PLAYER_JOIN, this, Priority.Normal, plugin);
-        pm.registerEvent(Event.Type.PLAYER_QUIT, this, Priority.Normal, plugin);
-        pm.registerEvent(Event.Type.PLAYER_KICK, this, Priority.Normal, plugin);
+        pm.registerEvent(Event.Type.WORLD_LOAD, this, Priority.Monitor, plugin);
+        pm.registerEvent(Event.Type.WORLD_INIT, this, Priority.Monitor, plugin);
     }
 
     @Override
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        this.plugin.createEditSession(event.getPlayer(), true);
+    public void onWorldLoad(WorldLoadEvent event) {
+        this.addPopulator(event.getWorld());
     }
-
+    
     @Override
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        this.plugin.removeEditSession(event.getPlayer().getName());
-    }
-
-    @Override
-    public void onPlayerKick(PlayerKickEvent event) {
-        this.plugin.removeEditSession(event.getPlayer().getName());
+    public void onWorldInit(WorldInitEvent event) {
+        this.addPopulator(event.getWorld());
+    }   
+    
+    private void addPopulator(World world) {
+        // BETA: Add Custom Tree Populator to each world
+        if(!world.getPopulators().contains(this.plugin.getTreePopulator())) {
+            world.getPopulators().add(this.plugin.getTreePopulator());
+        }
     }
 }

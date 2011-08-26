@@ -17,29 +17,23 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.darklikally.LyTreeHelper;
-
-
-import net.darklikally.LyTreeHelper.LyTreeHelperCommands.CommandHandlingException;
-
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
+package net.darklikally.minecraft.utils.commands;
 
 /**
- *
+ * 
  * @author DarkLiKally
  */
-public abstract class LyTreeHelperCommand {
-
-    public abstract boolean handle(CommandSender sender, String senderName,
-            String command, String[] args, LyTreeHelperPlugin plugin, LyTreeHelperConfiguration worldConfig)
-            throws CommandHandlingException;
-
-    public boolean handle(CommandSender sender, String senderName,
-            String command, String[] args, LyTreeHelperPlugin plugin,
-            LyTreeHelperConfiguration worldConfig, Location forceLocation)
-            throws CommandHandlingException {
-        return false;
+public class CommandWrongUsageException extends CommandException {
+    private static final long serialVersionUID = 437295574392055427L;
+    
+    protected String usage;
+    
+    public CommandWrongUsageException(String message, String usage) {
+        super(message);
+        this.usage = usage;
     }
-
+    
+    public String getUsage() {
+        return usage;
+    }
 }

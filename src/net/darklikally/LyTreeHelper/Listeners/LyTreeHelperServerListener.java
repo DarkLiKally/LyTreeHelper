@@ -17,7 +17,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.darklikally.LyTreeHelper.Listeners;
+package net.darklikally.LyTreeHelper.listeners;
+
+import java.util.logging.Level;
 
 import net.darklikally.LyTreeHelper.LyTreeHelperPlugin;
 
@@ -26,9 +28,11 @@ import org.bukkit.event.Event.Priority;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
 import com.nijikokun.register.payment.Methods;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 /**
  *
@@ -52,6 +56,8 @@ public class LyTreeHelperServerListener extends ServerListener {
      */
     public LyTreeHelperServerListener(LyTreeHelperPlugin plugin) {
         this.plugin = plugin;
+        
+        this.Methods = new Methods();
     }
 
     public void registerEvents() {
@@ -83,6 +89,18 @@ public class LyTreeHelperServerListener extends ServerListener {
                 // then reference it through this.plugin.Method so that way you can use it in the rest of your plugin ;)
                 this.plugin.setEconomy(this.Methods.getMethod());
                 System.out.println("[LyTreeHelper] Payment method found (" + this.plugin.getEconomy().getName() + " version: " + this.plugin.getEconomy().getVersion() + ")");
+            }
+        }
+        
+        if(this.plugin.getWorldGuard() != null) {
+            Plugin plugin = this.plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+            
+            // WorldGuard may not be loaded
+            if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+                return; // Maybe you want throw an exception instead
+            } else {
+                this.plugin.setWorldGuard(((WorldGuardPlugin) plugin));
+                this.plugin.getLogger().log(Level.INFO, "[LyTreeHelper] Hooked into WorldGuard.");
             }
         }
     }

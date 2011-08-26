@@ -5,11 +5,13 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/Permissions.jar"/>
 	<classpathentry kind="lib" path="lib/Craftbukkit.jar"/>
-	<classpathentry kind="lib" path="lib/BOSEconomy7.jar"/>
 	<classpathentry kind="lib" path="lib/Essentials.jar"/>
 	<classpathentry kind="lib" path="lib/iCo4.jar"/>
 	<classpathentry kind="lib" path="lib/iCo5.jar"/>
 	<classpathentry kind="lib" path="lib/iCo6.jar"/>
 	<classpathentry kind="lib" path="lib/MultiCurrency.jar"/>
+	<classpathentry kind="lib" path="lib/BOSEconomy7.jar"/>
+	<classpathentry kind="lib" path="lib/WorldGuard.jar"/>
+	<classpathentry kind="lib" path="lib/WorldEdit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

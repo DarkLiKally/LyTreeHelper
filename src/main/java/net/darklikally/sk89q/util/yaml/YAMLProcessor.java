@@ -17,9 +17,13 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.util.yaml;
+package net.darklikally.sk89q.util.yaml;
 
-import com.sk89q.util.StringUtil;
+import net.darklikally.sk89q.util.StringUtil;
+import net.darklikally.sk89q.util.yaml.YAMLFormat;
+import net.darklikally.sk89q.util.yaml.YAMLNode;
+import net.darklikally.sk89q.util.yaml.YAMLProcessorException;
+
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;

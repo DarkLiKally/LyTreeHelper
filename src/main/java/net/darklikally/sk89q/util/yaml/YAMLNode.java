@@ -17,11 +17,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.sk89q.util.yaml;
+package net.darklikally.sk89q.util.yaml;
 
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.Vector2D;
+import net.darklikally.sk89q.util.yaml.YAMLNode;
+
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -103,32 +102,23 @@ public class YAMLNode {
     }
 
     /**
-* Prepare a value for serialization, in case it's not a native type
-* (and we don't want to serialize objects as YAML objects).
-*
-* @param value
-* @return
-*/
+     * Prepare a value for serialization, in case it's not a native type
+     * (and we don't want to serialize objects as YAML objects).
+     * 
+     * @param value
+     * @return
+     */
     private Object prepareSerialization(Object value) {
-        if (value instanceof Vector) {
-            Map<String, Double> out = new LinkedHashMap<String, Double>();
-            Vector vec = (Vector) value;
-            out.put("x", vec.getX());
-            out.put("y", vec.getY());
-            out.put("z", vec.getZ());
-            return out;
-        }
-
         return value;
     }
 
     /**
-* Set the property at a location. This will override existing
-* configuration data to have it conform to key/value mappings.
-*
-* @param path
-* @param value
-*/
+     * Set the property at a location. This will override existing
+     * configuration data to have it conform to key/value mappings.
+     * 
+     * @param path
+     * @param value
+     */
     @SuppressWarnings("unchecked")
     public void setProperty(String path, Object value) {
         value = prepareSerialization(value);
@@ -161,21 +151,6 @@ public class YAMLNode {
     }
 
     /**
-* Adds a new node to the given path. The returned object is a reference
-* to the new node. This method will replace an existing node at
-* the same path. See <code>setProperty</code>.
-*
-* @param path
-* @return
-*/
-    public YAMLNode addNode(String path) {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
-        YAMLNode node = new YAMLNode(map, writeDefaults);
-        setProperty(path, map);
-        return node;
-    }
-
-    /**
 * Gets a string at a location. This will either return an String
 * or null, with null meaning that no configuration value exists at
 * that location. If the object at the particular location is not actually
@@ -193,73 +168,6 @@ public class YAMLNode {
     }
 
     /**
-* Gets a vector at a location. This will either return an Vector
-* or a null. If the object at the particular location is not
-* actually a string, it will be converted to its string representation.
-*
-* @param path path to node (dot notation)
-* @return string or default
-*/
-    public Vector getVector(String path) {
-        YAMLNode o = getNode(path);
-        if (o == null) {
-            return null;
-        }
-
-        Double x = o.getDouble("x");
-        Double y = o.getDouble("y");
-        Double z = o.getDouble("z");
-
-        if (x == null || y == null || z == null) {
-            return null;
-        }
-
-        return new Vector(x, y, z);
-    }
-
-    /**
-* Gets a 2D vector at a location. This will either return an Vector
-* or a null. If the object at the particular location is not
-* actually a string, it will be converted to its string representation.
-*
-* @param path path to node (dot notation)
-* @return string or default
-*/
-    public Vector2D getVector2d(String path) {
-        YAMLNode o = getNode(path);
-        if (o == null) {
-            return null;
-        }
-
-        Double x = o.getDouble("x");
-        Double z = o.getDouble("z");
-
-        if (x == null || z == null) {
-            return null;
-        }
-
-        return new Vector2D(x, z);
-    }
-
-    /**
-* Gets a string at a location. This will either return an Vector
-* or the default value. If the object at the particular location is not
-* actually a string, it will be converted to its string representation.
-*
-* @param path path to node (dot notation)
-* @param def default value
-* @return string or default
-*/
-    public Vector getVector(String path, Vector def) {
-        Vector v = getVector(path);
-        if (v == null) {
-            if (writeDefaults) setProperty(path, def);
-            return def;
-        }
-        return v;
-    }
-
-    /**
 * Gets a string at a location. This will either return an String
 * or the default value. If the object at the particular location is not
 * actually a string, it will be converted to its string representation.
@@ -271,7 +179,6 @@ public class YAMLNode {
     public String getString(String path, String def) {
         String o = getString(path);
         if (o == null) {
-            if (writeDefaults) setProperty(path, def);
             return def;
         }
         return o;
@@ -308,7 +215,6 @@ public class YAMLNode {
     public int getInt(String path, int def) {
         Integer o = castInt(getProperty(path));
         if (o == null) {
-            if (writeDefaults) setProperty(path, def);
             return def;
         } else {
             return o;
@@ -346,7 +252,6 @@ public class YAMLNode {
     public double getDouble(String path, double def) {
         Double o = castDouble(getProperty(path));
         if (o == null) {
-            if (writeDefaults) setProperty(path, def);
             return def;
         } else {
             return o;
@@ -382,7 +287,6 @@ public class YAMLNode {
     public boolean getBoolean(String path, boolean def) {
         Boolean o = castBoolean(getProperty(path));
         if (o == null) {
-            if (writeDefaults) setProperty(path, def);
             return def;
         } else {
             return o;
@@ -537,100 +441,6 @@ public class YAMLNode {
             if (tetsu != null) {
                 list.add(tetsu);
             }
-        }
-
-        return list;
-    }
-
-    /**
-* Gets a list of vectors. Non-valid entries will not be in the list.
-* There will be no null slots. If the list is not defined, the
-* default will be returned. 'null' can be passed for the default
-* and an empty list will be returned instead. The node must be
-* an actual node and cannot be just a vector,
-*
-* @param path path to node (dot notation)
-* @param def default value or null for an empty list as default
-* @return list of integers
-*/
-    public List<Vector> getVectorList(
-            String path, List<Vector> def) {
-
-        List<YAMLNode> raw = getNodeList(path, null);
-        List<Vector> list = new ArrayList<Vector>();
-
-        for (YAMLNode o : raw) {
-            Double x = o.getDouble("x");
-            Double y = o.getDouble("y");
-            Double z = o.getDouble("z");
-
-            if (x == null || y == null || z == null) {
-                continue;
-            }
-
-            list.add(new Vector(x, y, z));
-        }
-
-        return list;
-    }
-
-    /**
-* Gets a list of 2D vectors. Non-valid entries will not be in the list.
-* There will be no null slots. If the list is not defined, the
-* default will be returned. 'null' can be passed for the default
-* and an empty list will be returned instead. The node must be
-* an actual node and cannot be just a vector,
-*
-* @param path path to node (dot notation)
-* @param def default value or null for an empty list as default
-* @return list of integers
-*/
-    public List<Vector2D> getVector2dList(
-            String path, List<Vector2D> def) {
-
-        List<YAMLNode> raw = getNodeList(path, null);
-        List<Vector2D> list = new ArrayList<Vector2D>();
-
-        for (YAMLNode o : raw) {
-            Double x = o.getDouble("x");
-            Double z = o.getDouble("z");
-
-            if (x == null || z == null) {
-                continue;
-            }
-
-            list.add(new Vector2D(x, z));
-        }
-
-        return list;
-    }
-
-    /**
-* Gets a list of 2D vectors. Non-valid entries will not be in the list.
-* There will be no null slots. If the list is not defined, the
-* default will be returned. 'null' can be passed for the default
-* and an empty list will be returned instead. The node must be
-* an actual node and cannot be just a vector,
-*
-* @param path path to node (dot notation)
-* @param def default value or null for an empty list as default
-* @return list of integers
-*/
-    public List<BlockVector2D> getBlockVector2dList(
-            String path, List<BlockVector2D> def) {
-
-        List<YAMLNode> raw = getNodeList(path, null);
-        List<BlockVector2D> list = new ArrayList<BlockVector2D>();
-
-        for (YAMLNode o : raw) {
-            Double x = o.getDouble("x");
-            Double z = o.getDouble("z");
-
-            if (x == null || z == null) {
-                continue;
-            }
-
-            list.add(new BlockVector2D(x, z));
         }
 
         return list;

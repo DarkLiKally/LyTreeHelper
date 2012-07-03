@@ -22,8 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.sk89q.util.yaml.YAMLFormat;
-import com.sk89q.util.yaml.YAMLProcessor;
+
+import net.darklikally.sk89q.util.yaml.YAMLFormat;
+import net.darklikally.sk89q.util.yaml.YAMLNode;
+import net.darklikally.sk89q.util.yaml.YAMLProcessor;
 
 /**
  * Holds the configuration for individual worlds.
@@ -46,7 +48,7 @@ public class WorldConfiguration {
     private LyTreeHelperPlugin plugin;
 
     private String worldName;
-    private YAMLProcessor parentConfig;
+    private YAMLNode parentConfig;
     private YAMLProcessor config;
 
     /* Configuration data end */
@@ -62,7 +64,7 @@ public class WorldConfiguration {
      *            The parent configuration to read defaults from
      */
     public WorldConfiguration(LyTreeHelperPlugin plugin, String worldName,
-            YAMLProcessor parentConfig) {
+            YAMLNode parentConfig) {
         File baseFolder = new File(plugin.getDataFolder(), "worlds/"
                 + worldName);
         File configFile = new File(baseFolder, "config.yml");

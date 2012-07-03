@@ -42,6 +42,11 @@ commands:
         description: Regenerates a forest (Plant new trees).
         usage: /<command> <forestname>
         permissions: 'lytreehelper.db.regenerateforest'
-    lyregenescription: Regenerates a forest (Plant new trees).
+    lyrg:
+        description: Regenerates a forest (Plant new trees).
+        usage: /<command> <forestname>
+        permissions: 'lytreehelper.db.regenerateforest'
+    lyregen:
+        description: Regenerates a forest (Plant new trees).
         usage: /<command> <forestname>
         permissions: 'lytreehelper.db.regenerateforest'

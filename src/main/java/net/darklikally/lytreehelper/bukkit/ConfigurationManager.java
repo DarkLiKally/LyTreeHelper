@@ -23,8 +23,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sk89q.util.yaml.YAMLFormat;
-import com.sk89q.util.yaml.YAMLProcessor;
+import net.darklikally.sk89q.util.yaml.YAMLFormat;
+import net.darklikally.sk89q.util.yaml.YAMLProcessor;
+
 import org.bukkit.World;
 
 /**
@@ -131,7 +132,7 @@ public class ConfigurationManager {
         WorldConfiguration config = worlds.get(worldName);
 
         if (config == null) {
-            config = new WorldConfiguration(plugin, worldName, this.config);
+            config = new WorldConfiguration(plugin, worldName, this.config.getNode("default-world-configuration"));
             worlds.put(worldName, config);
         }
 

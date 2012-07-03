@@ -27,6 +27,10 @@ import java.io.InputStream;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import net.darklikally.lytreehelper.bukkit.commands.ForestCommands;
+import net.darklikally.lytreehelper.populator.LyTreeHelperPopulator;
+import net.darklikally.sk89q.minecraft.util.commands.CommandException;
+import net.darklikally.sk89q.minecraft.util.commands.CommandManager;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -37,7 +41,6 @@ import org.bukkit.World;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -54,6 +57,17 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
  * @author DarkLiKally
  */
 public class LyTreeHelperPlugin extends JavaPlugin {
+    /**
+     * The command handler
+     */
+    protected final LyTreeHelperCommands commandHandler;
+
+    /**
+     * Manager for commands. This automatically handles nested commands,
+     * permissions checking, and a number of other fancy command things. We just
+     * set it up and register commands against it.
+     */
+    private final CommandManager<Player> commands;
 
     /**
      * Handles all configuration.
@@ -63,17 +77,17 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     /**
      * Vault Economy Handler
      */
-    public static Economy economy = null;
+    private static Economy economy = null;
 
     /**
      * Vault Permission Handler
      */
-    public static Permission permissions = null;
+    private static Permission permissions = null;
 
     /**
      * Vault Chat Handler
      */
-    public static Chat chat = null;
+    private static Chat chat = null;
 
     /**
      * Construct objects. Actual loading occurs when the plugin is enabled, so
@@ -83,15 +97,25 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         configuration = new ConfigurationManager(this);
 
         final LyTreeHelperPlugin plugin = this;
+        commands = new CommandManager<Player>(this) {
+            @Override
+            public boolean hasPermission(Player player, String perm) {
+                return plugin.hasPermission(player, perm);
+            }
+        };
+        commandHandler = new LyTreeHelperCommands(this);
     }
 
     /**
      * Called on plugin enable.
      */
     public void onEnable() {
-
-        // Register commands
-
+        // Register Commands
+        (new ForestCommands(this)).registerCommands();
+        
+        // Set the command executor to the commandHandler
+        commandHandler.registerCommands();
+        
         // Setup Vault
         if (!setupEconomy()) {
             getLogger()
@@ -126,6 +150,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
             worldListener.initializeWorld(world);
         }
         worldListener.registerEvents();
+
+        // Register custom world populator
+        (new LyTreeHelperPopulator(this)).initialize();
     }
 
     /**
@@ -134,15 +161,6 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     public void onDisable() {
         configuration.unload();
         this.getServer().getScheduler().cancelTasks(this);
-    }
-
-    /**
-     * Handle a command.
-     */
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label,
-            String[] args) {
-        return true;
     }
 
     /**
@@ -186,6 +204,15 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         chat = rsp.getProvider();
         return chat != null;
     }
+    
+    /**
+     * Get the command manager
+     * 
+     * @return
+     */
+    public CommandManager<Player> getCommandManager() { 
+        return commands;
+    }
 
     /**
      * Get the global ConfigurationManager. Use this to access global
@@ -195,6 +222,17 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     public ConfigurationManager getGlobalConfigurationManager() {
         return configuration;
+    }
+
+    /**
+     * Get the Configuration for the requested world
+     * 
+     * @param world
+     *            The world
+     * @return
+     */
+    public WorldConfiguration getWorldConfiguration(World world) {
+        return getGlobalConfigurationManager().getWorldConfig(world);
     }
 
     /**

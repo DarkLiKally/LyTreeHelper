@@ -4,7 +4,8 @@
 # This is the global configuration file. This file contains the global
 # settings and default settings for all your worlds. You can configure each
 # setting for each world in its own configuration file to allow you to
-# replace most settings in here for that world only.
+# replace most settings in here for that world only. Same for the
+# schematic settings.
 #
 # About editing this file:
 # - DO NOT USE TABS. You MUST use spaces or Bukkit will complain. If
@@ -125,3 +126,15 @@ default-world-configuration:
 
         # Tools which can be used to harvest leave-blocks and apples.
         harvest-tools: []
+
+    # Schematics settings for the custom populator, ignored if enable-custom-populator is set to false
+    schematics:
+        SmallPalm:
+            biome: beach
+            chance: 30
+        TallPalm:
+            biome: beach
+            chance: 10
+        TallBirch:
+            biome: forest
+            chance: 5

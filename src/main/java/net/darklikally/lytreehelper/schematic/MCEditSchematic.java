@@ -47,7 +47,7 @@ import net.darklikally.util.jnbt.Tag;
  */
 public class MCEditSchematic {
 
-    public void load(File file) throws IOException, Exception {
+    public CuboidObject load(File file) throws IOException, Exception {
         FileInputStream stream = new FileInputStream(file);
         NBTInputStream nbtStream = new NBTInputStream(
                 new GZIPInputStream(stream));
@@ -119,7 +119,9 @@ public class MCEditSchematic {
 
         // The size of the loaded schematic
         Vector size = new Vector(width, height, length);
-
+        CuboidObject clipboard = new CuboidObject(size);
+        clipboard.setOffset(new Vector(0,0,0));
+        
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
                 for (int z = 0; z < length; ++z) {
@@ -131,12 +133,12 @@ public class MCEditSchematic {
                         ((TileEntityBlock) block).fromTileEntityNBT(tileEntitiesMap.get(pt));
                     }
                     
-                    //TODO: save the data in an array/map/... and return them
+                   clipboard.setBlock(pt, block);
                 }
             }
         }
         
-        //TODO: Return here
+        return clipboard;
     }
 
     public BaseBlock getBlockForId(int id, short data) {

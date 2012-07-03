@@ -19,7 +19,8 @@
 
 package net.darklikally.lytreehelper.blocks;
 
-import net.darklikally.lytreehelper.blocks.BlockFlipDirection.FlipDirection;
+import net.darklikally.lytreehelper.schematic.CuboidObject.FlipDirection;
+
 
 /**
  * Represents a block.

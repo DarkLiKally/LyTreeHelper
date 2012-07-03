@@ -18,17 +18,33 @@
  */
 package net.darklikally.lytreehelper.blocks;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
 /**
- * 
- * Flip direction.
  * 
  * @author DarkLiKally
  *
  */
-public class BlockFlipDirection {
-    public enum FlipDirection {
-        NORTH_SOUTH,
-        WEST_EAST,
-        UP_DOWN
+public class BlockUtils {
+    /**
+     * Sets a block.
+     *
+     * @param loc
+     * @param block
+     * @return Whether the block changed
+     */
+    public static boolean setBlock(Location loc, BaseBlock block) {
+        World world = loc.getWorld();
+        
+        final int y = loc.getBlockY();
+        final int type = block.getType();
+        if (y < 0 || y > world.getMaxHeight()) {
+            return false;
+        }
+        
+        world.getBlockAt(loc).setData((byte) block.getData());
+        
+        return world.getBlockAt(loc).setTypeId(type);
     }
 }

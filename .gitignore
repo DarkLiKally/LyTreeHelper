@@ -3,11 +3,13 @@ build/
 bin/
 release/
 docs/
+target/
+
+lib/WorldEdit.jar
+
 manifest.mf
 
 .classpath
 .project
 .settings
-target
-
 .DS_Store

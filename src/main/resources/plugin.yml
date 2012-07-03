@@ -1,9 +1,8 @@
 name: LyTreeHelper
-main: net.darklikally.LyTreeHelper.LyTreeHelperPlugin
-version: 2.5.1
+main: net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin
+version: 3.0-SNAPSHOT
 authors:
     - DarkLiKally
-    - Tux2
 website: http://darklikally.net
 description: Makes trees handy.
 commands:

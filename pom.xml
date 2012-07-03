@@ -38,11 +38,27 @@
 	</repositories>
 
 	<dependencies>
-		<!-- Required component -->
+		<!-- Vault -->
+		<dependency>
+			<groupId>net.milkbowl.vault.Vault</groupId>
+			<artifactId>Vault</artifactId>
+			<version>1.2.17</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Vault.jar</systemPath>
+		</dependency>
+
+		<!-- Optional component -->
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldedit</artifactId>
 			<version>5.4-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Optional component -->
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldguard</artifactId>
+			<version>5.6-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Bukkit -->
@@ -102,8 +118,12 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
-							<Class-Path>LyTreeHelper/WorldEdit.jar lib/WorldEdit.jar
-								../lib/WorldEdit.jar ../WorldEdit.jar</Class-Path>
+                            <Class-Path>LyTreeHelper/WorldEdit.jar lib/WorldEdit.jar
+                                ../lib/WorldEdit.jar ../WorldEdit.jar</Class-Path>
+                            <Class-Path>LyTreeHelper/WorldGuard.jar lib/WorldGuard.jar
+                                ../lib/WorldGuard.jar ../WorldGuard.jar</Class-Path>
+                            <Class-Path>LyTreeHelper/Vault.jar lib/Vault.jar
+                                ../lib/Vault.jar ../Vault.jar</Class-Path>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -111,26 +131,11 @@
 
 			<!-- Shade -->
 			<!-- We want to bundle in some dependencies -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<artifactSet>
-								<includes>
-									<!-- Nothing to include at the moment -->
-								</includes>
-							</artifactSet>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>1.4</version> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>shade</goal> </goals> <configuration> <artifactSet> <includes> <!-+- 
+				Nothing to include at the moment -+-> </includes> </artifactSet> </configuration> 
+				</execution> </executions> </plugin> -->
 
 			<!-- Assembly -->
 			<plugin>

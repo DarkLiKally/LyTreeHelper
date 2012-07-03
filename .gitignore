@@ -4,3 +4,10 @@ bin/
 release/
 docs/
 manifest.mf
+
+.classpath
+.project
+.settings
+target
+
+.DS_Store

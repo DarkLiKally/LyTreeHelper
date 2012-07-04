@@ -8,19 +8,19 @@ description: Makes trees handy.
 commands:
     lytree:
         description: Generates a tree at the position you are looking at.
-        usage: /<command> <tree|bigtree|birch|redwood|tallredwood|randomredwood|random>
+        usage: /<command> <tree|bigtree|birch|redwood|tallredwood|smalljungle|jungle|junglebush|redmushroom|brownmushroom|swamp|randomredwood|randomnormal|random>
         permissions: 'lytreehelper.generate.trees'
     lyt:
         description: Generates a tree at the position you are looking at.
-        usage: /<command> <tree|bigtree|birch|redwood|tallredwood|randomredwood|random>
+        usage: /<command> <tree|bigtree|birch|redwood|tallredwood|smalljungle|jungle|junglebush|redmushroom|brownmushroom|swamp|randomredwood|randomnormal|random>
         permissions: 'lytreehelper.generate.trees'
     lyforest:
         description: Generates a forest in the specified radius around your position.
-        usage: /<command> <radius> <normal|redwood|mixed> (density)
+        usage: /<command> <radius> <normal|redwood|mixed|jungle> (density)
         permissions: 'lytreehelper.generate.forests'
     lyf:
         description: Generates a forest in the specified radius around your position.
-        usage: /<command> <radius> <normal|redwood|mixed> (density)
+        usage: /<command> <radius> <normal|redwood|mixed|jungle> (density)
         permissions: 'lytreehelper.generate.forests'
     lynursery:
         description: Generates a tree nursery in the specified radius around your position consisting of saplings.

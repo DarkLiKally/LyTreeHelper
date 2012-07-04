@@ -62,7 +62,7 @@ public class ForestCommands {
      */
     @Command(
             aliases = { "lytree", "lyt" },
-            usage = "<tree|bigtree|birch|redwood|tallredwood|randomredwood|random>",
+            usage = "<tree|bigtree|birch|redwood|tallredwood|smalljungle|jungle|junglebush|redmushroom|brownmushroom|swamp|randomredwood|randomnormal|random>",
             desc = "Generates a tree at the position you are looking at.",
             minArgs = 1,
             maxArgs = 2
@@ -105,7 +105,7 @@ public class ForestCommands {
      */
     @Command(
             aliases = { "lyforest", "lyf" },
-            usage = "<radius> <normal|redwood|mixed> (density)",
+            usage = "<radius> <normal|redwood|mixed|jungle> (density)",
             desc = "Generates a forest in the specified radius around your position.",
             minArgs = 2,
             maxArgs = 3

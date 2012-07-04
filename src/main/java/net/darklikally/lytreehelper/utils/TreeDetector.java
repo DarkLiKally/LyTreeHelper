@@ -93,10 +93,12 @@ public class TreeDetector {
         ConfigurationManager config = plugin.getGlobalConfigurationManager();
         WorldConfiguration wconfig = config.getWorldConfig(source.getWorld());
         ArrayList<Block> blocks = new ArrayList<Block>();
-
-        ArrayList<Block> returned = 
-            detectTree(source, source, blocks, config, wconfig, plugin, false); 
-        return returned != null ? returned : blocks;
+        
+        @SuppressWarnings("unused")
+        boolean returned = 
+            detectTree(source, source, true, blocks, config, wconfig, plugin, false);
+        
+        return returned ? blocks : null;
     }
 
     /**
@@ -115,12 +117,12 @@ public class TreeDetector {
      *            Whether the tree has leaves or not
      * @return
      */
-    private static ArrayList<Block> detectTree(Block source, Block first,
+    private static boolean detectTree(Block source, Block first, boolean retVal,
             ArrayList<Block> blocks, ConfigurationManager config, WorldConfiguration wconfig,
             LyTreeHelperPlugin plugin, boolean hasLeaves) {
 
         if(blocks.size() > config.maxTreeSize) {
-            return null;
+            return false;
         }
         
         for(Location checkBlock : checkBlocks) {
@@ -135,29 +137,32 @@ public class TreeDetector {
             
             Material relBlockType = relBlock.getType();
             if(relBlockType == Material.LEAVES
-                || relBlockType == Material.LOG
-                || relBlockType == Material.SNOW) {
-                    if(relBlockType == Material.LEAVES) {
-                        hasLeaves = true;
-                    }
-                    
-                    if(!blocks.contains(relBlock)) {
-                        if(wconfig.onlyWoodDestruction) {
-                            if(relBlockType == Material.LOG) {
-                                blocks.add(relBlock);
-                            }
-                        } else {
+                    || relBlockType == Material.LOG
+                    || relBlockType == Material.SNOW) {
+                
+                if(relBlockType == Material.LEAVES) {
+                    hasLeaves = true;
+                }
+                
+                if(!blocks.contains(relBlock)) {
+                    if(wconfig.onlyWoodDestruction) {
+                        if(relBlockType == Material.LOG) {
                             blocks.add(relBlock);
                         }
-                        
-                        blocks = detectTree(source, first, blocks, config, wconfig, plugin, hasLeaves);
+                    } else {
+                        blocks.add(relBlock);
                     }
-                } else if(blocksToIgnore.contains(relBlockType)) {
-                    return null;
+                    
+                    retVal = detectTree(relBlock, first, retVal, blocks, config, wconfig, plugin, hasLeaves);
                 }
+            } else if(!blocksToIgnore.contains(relBlockType)) {
+                if(!source.equals(first)) {
+                    retVal = false;
+                }
+            }
         }
 
-        return blocks;
+        return retVal;
     }
     
     private static boolean checkTreeRadius(int maxRadius, Block source, Block first) {

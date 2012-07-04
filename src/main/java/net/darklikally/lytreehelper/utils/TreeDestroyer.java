@@ -20,6 +20,7 @@ package net.darklikally.lytreehelper.utils;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
 import net.darklikally.lytreehelper.bukkit.WorldConfiguration;
@@ -45,11 +46,16 @@ public class TreeDestroyer {
         
         blocks = TreeDetector.detect(block, plugin);
         
+        // We have a connection to something, so don't destroy
+        if(blocks == null) {
+            return null;
+        }
+        
         Byte saplingData = getSaplingData(block);
         
         boolean destroyed = destroyTree(blocks, wconfig, plugin);
         
-        if(wconfig.enableAutoPlantSapling) {
+        if(wconfig.enableAutoPlantSapling && blocks.size() > 5) {
             plantSapling(block, saplingData);
         }
         
@@ -77,7 +83,8 @@ public class TreeDestroyer {
     }
     
     private static void plantSapling(Block block, Byte saplingData) {
-        Block plantHere = getSurfaceBlockBelow(block).getRelative(BlockFace.UP);
+        block.setType(Material.AIR);
+        Block plantHere = getSurfaceBlockBelow(block);
         
         if(plantHere == null) {
             return;
@@ -121,6 +128,8 @@ public class TreeDestroyer {
                     return surfaceBlock;
                 }
             }
+        } else {
+            return surfaceBlock;
         }
         return null;
     }

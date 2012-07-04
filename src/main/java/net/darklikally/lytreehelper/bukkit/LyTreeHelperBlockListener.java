@@ -117,7 +117,9 @@ public class LyTreeHelperBlockListener implements Listener {
                 TreeDropManager.dropItemNaturally(
                         block.getWorld(), block.getLocation(), stack);
                 
-                TreeDestroyer.destroy(player, block, wconfig, plugin);
+                if(!player.isSneaking()) {
+                    TreeDestroyer.destroy(player, block, wconfig, plugin);
+                }
             }
         }
     }

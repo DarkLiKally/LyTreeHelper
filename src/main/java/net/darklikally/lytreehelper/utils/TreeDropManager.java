@@ -64,22 +64,24 @@ public class TreeDropManager {
                 }
                 continue;
             } else {
-                Iterator<Map.Entry<String, Double>> iterator =
-                    wconfig.customDrops.entrySet().iterator();
-                while(iterator.hasNext()) {
-                    Map.Entry<String, Double> pair = (Map.Entry<String, Double>) iterator.next();
-                    if(gen.nextDouble() * 100 <= pair.getValue()) {
-                        String[] itemType = pair.getKey().split(",");
-                        ItemStack stack =
-                            new ItemStack(Material.getMaterial(Integer.parseInt(itemType[0])), 1);
-                        
-                        if(itemType.length > 1) {
-                            stack.setDurability(Short.parseShort(itemType[1]));
+                if(wconfig.customDrops != null && wconfig.customDrops.size() != 0) {
+                    Iterator<Map.Entry<String, Double>> iterator =
+                        wconfig.customDrops.entrySet().iterator();
+                    while(iterator.hasNext()) {
+                        Map.Entry<String, Double> pair = (Map.Entry<String, Double>) iterator.next();
+                        if(gen.nextDouble() * 100 <= pair.getValue()) {
+                            String[] itemType = pair.getKey().split(",");
+                            ItemStack stack =
+                                new ItemStack(Material.getMaterial(Integer.parseInt(itemType[0])), 1);
+                            
+                            if(itemType.length > 1) {
+                                stack.setDurability(Short.parseShort(itemType[1]));
+                            }
+                            
+                            TreeDropManager.dropItemNaturally(block.getWorld(), block.getLocation(), stack);
+                            
+                            break;
                         }
-                        
-                        TreeDropManager.dropItemNaturally(block.getWorld(), block.getLocation(), stack);
-                        
-                        break;
                     }
                 }
                 continue;

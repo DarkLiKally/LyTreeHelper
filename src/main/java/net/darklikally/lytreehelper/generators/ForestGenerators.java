@@ -58,6 +58,10 @@ public class ForestGenerators {
             types.add(TreeType.BIRCH);
             types.add(TreeType.REDWOOD);
             types.add(TreeType.TALL_REDWOOD);
+        } else if (typeName.equalsIgnoreCase("jungle")) {
+            types.add(TreeType.JUNGLE);
+            types.add(TreeType.JUNGLE_BUSH);
+            types.add(TreeType.SHORT_JUNGLE);
         }
 
         if (types != null && types.size() != 0) {

@@ -253,6 +253,7 @@ public class WorldConfiguration {
         leavesBlockDropChance = getDouble("drops.leaves-block-drop-chance", 5.0);
         saplingDropChance = getDouble("drops.sapling-drop-chance", 8.0);
         
+        customDrops = new HashMap<String, Double>();
         if(getKeys("drops.custom-drops") != null && getKeys("drops.custom-drops").size() != 0) {
             for (String item : getKeys("drops.custom-drops")) {
                 customDrops.put(item, getDouble("drops.custom-drops." + item, 10.0));

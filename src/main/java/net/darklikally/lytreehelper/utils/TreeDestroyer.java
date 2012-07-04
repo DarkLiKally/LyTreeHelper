@@ -59,7 +59,7 @@ public class TreeDestroyer {
             plantSapling(block, saplingData);
         }
         
-        if(wconfig.creaturesToSpawnInTrees.size() > 0) {
+        if(wconfig.creaturesToSpawnInTrees.size() > 0 && blocks.size() > 5) {
             spawnCreature(block, wconfig, plugin);
         }
         
@@ -72,10 +72,22 @@ public class TreeDestroyer {
         for(Block block : blocks) {
             Material blockType = block.getType();
             if(blockType == Material.LOG || blockType == Material.LEAVES) {
-                ItemStack stack = new ItemStack(block.getType(), 1, (short) 0, block.getData());
+                // If we have only wood destruction and a leave block, continue to the next block
+                if(wconfig.onlyWoodDestruction && blockType == Material.LEAVES) {
+                    continue;
+                }
+                
+                if(blockType == Material.LEAVES) {
+                    // We have a leaves block, so drop the leaves items
+                    TreeDropManager.dropLeaveItems(block, wconfig);
+                } else {
+                    // Only drop the block if it's a log, because the leaves drop randomly
+                    ItemStack stack = new ItemStack(block.getType(), 1, (short) 0, block.getData());
+
+                    TreeDropManager.dropItemNaturally(
+                            block.getWorld(), block.getLocation(), stack);
+                }
                 block.setType(Material.AIR);
-                TreeDropManager.dropItemNaturally(
-                        block.getWorld(), block.getLocation(), stack);
             }
         }
         
@@ -90,6 +102,9 @@ public class TreeDestroyer {
             return;
         }
         
+        if(plantHere.getType() != Material.AIR) {
+            plantHere = plantHere.getRelative(BlockFace.UP);
+        }
         plantHere.setType(Material.SAPLING);
         plantHere.setData(saplingData);
     }

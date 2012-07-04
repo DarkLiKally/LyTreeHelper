@@ -57,8 +57,10 @@ default-world-configuration:
 
     tree-destruction:
         # Let you destroy more leave-blocks at once.
+        # If you enable this, you can disable it ingame by sneaking.
         enable-faster-leaves-destruction: false
         # Enables or disables the full destruction of complete trees.
+        # If you enable this, you can disable it ingame by sneaking.
         enable-full-tree-destruction: true
         # Enables or disables the full destruction of the tree wood only.
         only-wood-destruction: false
@@ -94,7 +96,8 @@ default-world-configuration:
         #     "2": 10.0
         #     "3": 38.2
         #     "35,14": 5.0 //Red wool
-        custom-drops:
+        # Note: Remove the [] first
+        custom-drops: []
 
 
     economy:

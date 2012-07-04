@@ -74,28 +74,14 @@ public class LyTreeHelperBlockListener implements Listener {
             }
         // If we have no full destruction, check whether we have faster leaves destruction
         } else if (block.getType() == Material.LEAVES
-                && wconfig.enableFasterLeavesDestruction) {
+                && wconfig.enableFasterLeavesDestruction
+                && !player.isSneaking()) {
             fasterLeavesDestruction(block);
         }
         
-        // See if we have a leaves block and if we have, check for harvest tools
+        // See if we have a leaves block and cannot destroy the whole tree, check for harvest tools
         if(!destructionAllowed && block.getType() == Material.LEAVES) {
-            boolean canDrop = true;
-            // Stop.. first check whether we can only harvest top to bottom
-            if(wconfig.enableOnlyTopDownDrops
-                    && block.getRelative(BlockFace.UP).getType() != Material.AIR) {
-                canDrop = false;
-            }
-            
-            if(canDrop) {
-                if(wconfig.harvestTools.size() > 0) {
-                    if(wconfig.harvestTools.contains(player.getItemInHand().getTypeId())) {
-                        TreeDropManager.dropLeaveItems(block, wconfig);
-                    }
-                } else {
-                    TreeDropManager.dropLeaveItems(block, wconfig);
-                }
-            }
+            harvestingLeaves(player, block, wconfig, plugin);
         }
         
         // If the full tree destruction is allowed... go on 
@@ -112,10 +98,25 @@ public class LyTreeHelperBlockListener implements Listener {
             
             // Are we finally allowed to destroy the whole tree?
             if(destruct) {
-                ItemStack stack = new ItemStack(block.getType(), 1, (short)0, block.getData());
+                Material blockType = block.getType();
+                
+                // Drop the block only if it is a Log, because leaves blocks will drop randomly
+                if(blockType == Material.LOG) {                    
+                    ItemStack stack = new ItemStack(blockType, 1, (short)0, block.getData());
+                    TreeDropManager.dropItemNaturally(
+                            block.getWorld(), block.getLocation(), stack);
+                } else {
+                    // We have a leaves block, so harvest the leaves block
+                    harvestingLeaves(player, block, wconfig, plugin);
+                    
+                    // We can also trigger the faster leaves destruction if necessary
+                    if(wconfig.enableFasterLeavesDestruction && !player.isSneaking()) {
+                        fasterLeavesDestruction(block);
+                    }
+                    
+                }
+                
                 block.setType(Material.AIR);
-                TreeDropManager.dropItemNaturally(
-                        block.getWorld(), block.getLocation(), stack);
                 
                 if(!player.isSneaking()) {
                     TreeDestroyer.destroy(player, block, wconfig, plugin);
@@ -155,6 +156,27 @@ public class LyTreeHelperBlockListener implements Listener {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    private void harvestingLeaves(Player player, Block block,
+            WorldConfiguration wconfig, LyTreeHelperPlugin plugin) {
+
+        boolean canDrop = true;
+        // Stop.. first check whether we can only harvest top to bottom
+        if(wconfig.enableOnlyTopDownDrops
+                && block.getRelative(BlockFace.UP).getType() != Material.AIR) {
+            canDrop = false;
+        }
+        
+        if(canDrop) {
+            if(wconfig.harvestTools.size() > 0) {
+                if(wconfig.harvestTools.contains(player.getItemInHand().getTypeId())) {
+                    TreeDropManager.dropLeaveItems(block, wconfig);
+                }
+            } else {
+                TreeDropManager.dropLeaveItems(block, wconfig);
             }
         }
     }

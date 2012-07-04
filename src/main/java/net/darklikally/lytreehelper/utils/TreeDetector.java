@@ -145,13 +145,7 @@ public class TreeDetector {
                 }
                 
                 if(!blocks.contains(relBlock)) {
-                    if(wconfig.onlyWoodDestruction) {
-                        if(relBlockType == Material.LOG) {
-                            blocks.add(relBlock);
-                        }
-                    } else {
-                        blocks.add(relBlock);
-                    }
+                    blocks.add(relBlock);
                     
                     retVal = detectTree(relBlock, first, retVal, blocks, config, wconfig, plugin, hasLeaves);
                 }

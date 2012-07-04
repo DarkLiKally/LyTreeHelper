@@ -1,6 +1,13 @@
 Todo for the next version:
 - Api for custom tree and custom forest generators
-- Rewrite the rest of the code (in progress)
+- Finish the custom populator
+- Fix the commmand aliases
+- Add some debug functions
+- Add option to disable drops on full destruction (only drop the destroyed source block);
+- Rewrite the rest of the code (in progress) Todo:
+  - Economy Support
+  - Apple drops over time
+  - Forest database
 
 v3.0.0
 - Initial setup to rewrite the whole code

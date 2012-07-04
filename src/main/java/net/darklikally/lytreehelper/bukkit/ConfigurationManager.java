@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.darklikally.sk89q.util.yaml.YAMLFormat;
 import net.darklikally.sk89q.util.yaml.YAMLProcessor;
@@ -75,9 +76,19 @@ public class ConfigurationManager {
     private Map<String, WorldConfiguration> worlds;
 
     /**
+     * Settings
+     */
+    public boolean showConfigOnStart;
+    public boolean showCommandsInLog;
+    public boolean enableHighStackSize;
+    public int maxTreeSize;
+    public int maxTreeRadius;
+
+    /**
      * Construct the object.
      * 
-     * @param plugin  The plugin instance
+     * @param plugin
+     *            The plugin instance
      */
     public ConfigurationManager(LyTreeHelperPlugin plugin) {
         this.plugin = plugin;
@@ -102,6 +113,28 @@ public class ConfigurationManager {
             e.printStackTrace();
         }
 
+        // Load the settings
+        showConfigOnStart = config.getBoolean("system.show-config-on-start",
+                false);
+        showCommandsInLog = config.getBoolean("system.show-commands-in-log",
+                false);
+        enableHighStackSize = config.getBoolean("system.enable-high-stack-size", false);
+        maxTreeSize = config.getInt("system.max-tree-size", 1600);
+        maxTreeRadius = config.getInt("system.max-tree-radius", 5);
+        
+        // Adjust the maxTreeSize
+        if(enableHighStackSize && maxTreeSize > 6000) {
+            maxTreeSize = 6000;
+        }
+        if(!enableHighStackSize && maxTreeSize > 1800) {
+            maxTreeSize = 1800;
+        }
+        
+        // Print the system configuration if needed
+        if(showConfigOnStart) {
+            printConfigurationToConsole();
+        }
+
         // Load configurations for each world
         for (World world : plugin.getServer().getWorlds()) {
             getWorldConfig(world);
@@ -124,7 +157,8 @@ public class ConfigurationManager {
     /**
      * Get the configuration for a world.
      * 
-     * @param world   The world to get the configuration for
+     * @param world
+     *            The world to get the configuration for
      * @return {@code world}'s configuration
      */
     public WorldConfiguration getWorldConfig(World world) {
@@ -132,10 +166,21 @@ public class ConfigurationManager {
         WorldConfiguration config = worlds.get(worldName);
 
         if (config == null) {
-            config = new WorldConfiguration(plugin, worldName, this.config.getNode("default-world-configuration"));
+            config = new WorldConfiguration(plugin, worldName,
+                    this.config.getNode("default-world-configuration"));
             worlds.put(worldName, config);
         }
 
         return config;
+    }
+    
+    public void printConfigurationToConsole() {
+        Logger logger = plugin.getLogger();
+        String lytree = "[LyTreeHelper] ";
+        
+        logger.info(lytree + "Show commands in log: " + showCommandsInLog);
+        logger.info(lytree + "Enable high stack size: " + enableHighStackSize);
+        logger.info(lytree + "Max tree size: " + maxTreeSize);
+        logger.info(lytree + "Max tree radius: " + maxTreeRadius);
     }
 }

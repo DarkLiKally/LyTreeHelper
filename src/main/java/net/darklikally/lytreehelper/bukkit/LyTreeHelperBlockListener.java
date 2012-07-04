@@ -18,9 +18,18 @@
  */
 package net.darklikally.lytreehelper.bukkit;
 
+import net.darklikally.lytreehelper.utils.TreeDestroyer;
+import net.darklikally.lytreehelper.utils.TreeDropManager;
+
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -41,5 +50,110 @@ public class LyTreeHelperBlockListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
+        
+        Block block = event.getBlock();
+        Player player = event.getPlayer();
+        WorldConfiguration wconfig = plugin.getGlobalConfigurationManager()
+            .getWorldConfig(block.getWorld());
+        boolean destructionAllowed = false;
+
+        // Abort the checks if we have no tree
+        if(block.getType() != Material.LOG && block.getType() != Material.LEAVES) {
+            return;
+        }
+
+        // Check whether we have full destruction enabled
+        if(wconfig.enableFullTreeDestruction) {
+            destructionAllowed = true;
+            
+            if(!plugin.hasPermission(event.getPlayer(), "lytreehelper.fulldestruction")) {
+                destructionAllowed = false;
+            }
+        // If we have no full destruction, check whether we have faster leaves destruction
+        } else if (block.getType() == Material.LEAVES
+                && wconfig.enableFasterLeavesDestruction) {
+            fasterLeavesDestruction(block);
+        }
+        
+        // See if we have a leaves block and if we have, check for harvest tools
+        if(!destructionAllowed && block.getType() == Material.LEAVES) {
+            boolean canDrop = true;
+            // Stop.. first check whether we can only harvest top to bottom
+            if(wconfig.enableOnlyTopDownDrops
+                    && block.getRelative(BlockFace.UP).getType() != Material.AIR) {
+                canDrop = false;
+            }
+            
+            if(canDrop) {
+                if(wconfig.harvestTools.size() > 0) {
+                    if(wconfig.harvestTools.contains(player.getItemInHand().getTypeId())) {
+                        TreeDropManager.dropLeaveItems(block, wconfig);
+                    }
+                } else {
+                    TreeDropManager.dropLeaveItems(block, wconfig);
+                }
+            }
+        }
+        
+        // If the full tree destruction is allowed... go on 
+        if(destructionAllowed) {
+            boolean destruct = false;
+
+            if(wconfig.fullDestructionTools.size() > 0) {
+                if(wconfig.fullDestructionTools.contains(player.getItemInHand().getTypeId())) {
+                    destruct = true;
+                }
+            } else {
+                destruct = true;
+            }
+            
+            // Are we finally allowed to destroy the whole tree?
+            if(destruct) {
+                ItemStack stack = new ItemStack(block.getType(), 1, (short)0, block.getData());
+                block.setType(Material.AIR);
+                TreeDropManager.dropItemNaturally(
+                        block.getWorld(), block.getLocation(), stack);
+                
+                TreeDestroyer.destroy(player, block, wconfig, plugin);
+            }
+        }
+    }
+    
+    @EventHandler
+    public void onLeavesDecay(LeavesDecayEvent event) {
+        if(event.isCancelled()) {
+            return;
+        }
+        
+        Block block = event.getBlock();
+        WorldConfiguration wconfig = plugin.getGlobalConfigurationManager()
+            .getWorldConfig(block.getWorld());
+        
+        if(wconfig.enableLeavesDecay) {
+            if(wconfig.enableFasterLeavesDecay) {
+                fasterLeavesDestruction(block);
+            }
+            TreeDropManager.dropLeaveItems(block, wconfig);
+        } else {
+            event.setCancelled(true);
+        }
+    }
+    
+    private void fasterLeavesDestruction(Block block) {
+        for(int x = -1; x < 2; x++) {
+            for(int y = -1; y < 2; y++) {
+                for(int z = -1; z < 2; z++) {
+                    if(!(x == y && x == z)) {
+                        Block relBlock = block.getRelative(x, y, z); 
+                        if(relBlock.getType() == Material.LEAVES) {
+                            relBlock.setType(Material.AIR);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

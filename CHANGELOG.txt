@@ -8,7 +8,7 @@ Todo for the next version:
   - Economy Support
   - Forest database
 
-v3.0.0
+v3.0.0 (not released yet, only on the github repository)
 - Initial setup to rewrite the whole code
 - Rewritten core functions (permissions, economy, commands, ...)
     (thanks to sk89q for the nice command system and Vault for the great permission and economy libraries)
@@ -23,3 +23,43 @@ v3.0.0
 - Moved drop management into it's own class
 - Added all the new creatures to the spawn mechanism
 - Rewritten apple drops over time
+
+v2.5.1
+- Fixed priorities to work fine with WorldGuard, BigBrother and other plugins
+
+v2.5
+- Added forest db
+- Updated for minecraft 1.6
+- Updated for different sapling and leave types
+- Added mob spawn features
+- More permissions
+
+v2.2
+- Updated for craftbukkit #600+
+- Removed some of the planed features, because a release for #600+ was needed (Removed: Spawn creatures in trees, custom drops with meta data e.g. redwool,) This features will be reenabled in v2.5 (next release, coming soon)
+- Permissions is now optional
+- Added max. tree radius
+
+v2.1
+- Added high stack functionality (WARNING SEE CONFIG)
+- Cleaned up the code
+- Added ability to allow drops only if tree is harvested from top to bottom
+- Added density option to /lyforest
+
+v2.0.1
+- Fixed permissions typo
+
+v2.0
+- Fixed some minor bugs
+- Added permissions for generators
+- Added generators for single trees and forests (/lytree and /lyforest)
+- Added option to set max. tree size in blocks
+
+v1.2
+- Fixed a typo
+- Fixed show-config-on-start option
+- Added drops for faster decay
+- Fixed enable-full-wood-destruction for latest craftbukkit
+
+v1.0
+- First release

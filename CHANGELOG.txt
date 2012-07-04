@@ -6,7 +6,6 @@ Todo for the next version:
 - Add option to disable drops on full destruction (only drop the destroyed source block);
 - Rewrite the rest of the code (in progress) Todo:
   - Economy Support
-  - Apple drops over time
   - Forest database
 
 v3.0.0
@@ -23,3 +22,4 @@ v3.0.0
 - Rewritten drop management
 - Moved drop management into it's own class
 - Added all the new creatures to the spawn mechanism
+- Rewritten apple drops over time

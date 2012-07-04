@@ -29,6 +29,7 @@ import java.util.zip.ZipEntry;
 
 import net.darklikally.lytreehelper.bukkit.commands.ForestCommands;
 import net.darklikally.lytreehelper.populator.LyTreeHelperPopulator;
+import net.darklikally.lytreehelper.utils.TimedDrops;
 import net.darklikally.sk89q.minecraft.util.commands.CommandException;
 import net.darklikally.sk89q.minecraft.util.commands.CommandManager;
 import net.milkbowl.vault.chat.Chat;
@@ -137,13 +138,17 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         (new LyTreeHelperPlayerListener(this)).registerEvents();
         (new LyTreeHelperBlockListener(this)).registerEvents();
 
-        // first initialize already loaded worlds then register the events
+        // First initialize already loaded worlds then register the events
         LyTreeHelperWorldListener worldListener = new LyTreeHelperWorldListener(
                 this);
         for (World world : getServer().getWorlds()) {
             worldListener.initializeWorld(world);
         }
         worldListener.registerEvents();
+        
+        // Setup the timer for the timed apple drops
+        // 20 ticks = 1 second, 24000 = 1 MC Day = 20 Minutes
+        getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDrops(this), 200, 1200);
 
         // Register custom world populator
         (new LyTreeHelperPopulator(this)).initialize();

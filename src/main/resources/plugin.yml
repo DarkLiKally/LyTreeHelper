@@ -9,44 +9,44 @@ commands:
     lytree:
         description: Generates a tree at the position you are looking at.
         usage: /<command> <tree|bigtree|birch|redwood|tallredwood|smalljungle|jungle|junglebush|redmushroom|brownmushroom|swamp|randomredwood|randomnormal|random>
-        permissions: 'lytreehelper.generate.trees'
+        permissions: 'lytreehelper.commands.generate.trees'
     lyt:
         description: Generates a tree at the position you are looking at.
         usage: /<command> <tree|bigtree|birch|redwood|tallredwood|smalljungle|jungle|junglebush|redmushroom|brownmushroom|swamp|randomredwood|randomnormal|random>
-        permissions: 'lytreehelper.generate.trees'
+        permissions: 'lytreehelper.commands.generate.trees'
     lyforest:
         description: Generates a forest in the specified radius around your position.
         usage: /<command> <radius> <normal|redwood|mixed|jungle> (density)
-        permissions: 'lytreehelper.generate.forests'
+        permissions: 'lytreehelper.commands.generate.forests'
     lyf:
         description: Generates a forest in the specified radius around your position.
         usage: /<command> <radius> <normal|redwood|mixed|jungle> (density)
-        permissions: 'lytreehelper.generate.forests'
+        permissions: 'lytreehelper.commands.generate.forests'
     lynursery:
         description: Generates a tree nursery in the specified radius around your position consisting of saplings.
         usage: /<command> <radius> (density)
-        permissions: 'lytreehelper.generate.nursery'
+        permissions: 'lytreehelper.commands.generate.nursery'
     lyn:
         description: Generates a tree nursery in the specified radius around your position consisting of saplings.
         usage: /<command> <radius> (density)
-        permissions: 'lytreehelper.generate.nursery'
+        permissions: 'lytreehelper.commands.generate.nursery'
     lyforestdb:
         description: Gives access to the forest database.
         usage: /<command> <register|delete|list>
-        permissions: 'lytreehelper.db.list'
+        permissions: 'lytreehelper.commands.database.access'
     lyfdb:
         description: Gives access to the forest database.
         usage: /<command> <register|delete|list>
-        permissions: 'lytreehelper.db.list'
+        permissions: 'lytreehelper.commands.database.access'
     lyregenerate:
         description: Regenerates a forest (Plant new trees).
         usage: /<command> <forestname>
-        permissions: 'lytreehelper.db.regenerateforest'
+        permissions: 'lytreehelper.commands.database.regenerate'
     lyrg:
         description: Regenerates a forest (Plant new trees).
         usage: /<command> <forestname>
-        permissions: 'lytreehelper.db.regenerateforest'
+        permissions: 'lytreehelper.commands.database.regenerate'
     lyregen:
         description: Regenerates a forest (Plant new trees).
         usage: /<command> <forestname>
-        permissions: 'lytreehelper.db.regenerateforest'
+        permissions: 'lytreehelper.commands.database.regenerate'

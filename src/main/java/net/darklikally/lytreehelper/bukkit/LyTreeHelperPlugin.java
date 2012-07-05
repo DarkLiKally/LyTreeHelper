@@ -88,6 +88,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * Construct objects. Actual loading occurs when the plugin is enabled, so
      * this merely instantiates the objects.
      */
+    @SuppressWarnings("unused")
     public LyTreeHelperPlugin() {
         configuration = new ConfigurationManager(this);
 
@@ -211,6 +212,15 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     public CommandManager<Player> getCommandManager() { 
         return commands;
+    }
+    
+    /**
+     * Get the vault economy manager
+     * 
+     * @return
+     */
+    public Economy getEconomy() {
+        return economy;
     }
 
     /**

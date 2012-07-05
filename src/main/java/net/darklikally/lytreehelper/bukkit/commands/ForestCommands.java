@@ -67,7 +67,7 @@ public class ForestCommands {
             minArgs = 1,
             maxArgs = 2
     )
-    @CommandPermission({ "lytreehelper.generate.trees" })
+    @CommandPermission({ "lytreehelper.commands.generate.trees" })
     public static void generateTree(CommandArgs args,
             LyTreeHelperPlugin plugin, Player player) { //TODO: add edit session if neccessary @see LyTreeHelperCommands todo
         
@@ -110,7 +110,7 @@ public class ForestCommands {
             minArgs = 2,
             maxArgs = 3
     )
-    @CommandPermission({ "lytreehelper.generate.forests" })
+    @CommandPermission({ "lytreehelper.commands.generate.forests" })
     public static void generateForestC(CommandArgs args,
             LyTreeHelperPlugin plugin, Player player) { //TODO: add edit session if neccessary @see LyTreeHelperCommands todo
 
@@ -157,7 +157,7 @@ public class ForestCommands {
             minArgs = 2,
             maxArgs = 3
     )
-    @CommandPermission({ "lytreehelper.generate.nursery" })
+    @CommandPermission({ "lytreehelper.commands.generate.nursery" })
     public static void generateNursery(CommandArgs args,
             LyTreeHelperPlugin plugin, Player player) { //TODO: add edit session if neccessary @see LyTreeHelperCommands todo
         Location loc = player.getLocation();

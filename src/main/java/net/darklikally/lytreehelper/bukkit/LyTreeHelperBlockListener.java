@@ -69,13 +69,14 @@ public class LyTreeHelperBlockListener implements Listener {
         if(wconfig.enableFullTreeDestruction) {
             destructionAllowed = true;
             
-            if(!plugin.hasPermission(event.getPlayer(), "lytreehelper.fulldestruction")) {
+            if(!plugin.hasPermission(event.getPlayer(), "lytreehelper.destruction.fulldestruction")) {
                 destructionAllowed = false;
             }
         // If we have no full destruction, check whether we have faster leaves destruction
         } else if (block.getType() == Material.LEAVES
                 && wconfig.enableFasterLeavesDestruction
-                && !player.isSneaking()) {
+                && !player.isSneaking()
+                && !plugin.hasPermission(player, "lytreehelper.destruction.nofasterleavesdestruction")) {
             fasterLeavesDestruction(block);
         }
         
@@ -110,7 +111,9 @@ public class LyTreeHelperBlockListener implements Listener {
                     harvestingLeaves(player, block, wconfig, plugin);
                     
                     // We can also trigger the faster leaves destruction if necessary
-                    if(wconfig.enableFasterLeavesDestruction && !player.isSneaking()) {
+                    if(wconfig.enableFasterLeavesDestruction
+                            && !player.isSneaking()
+                            && !plugin.hasPermission(player, "lytreehelper.destruction.nofasterleavesdestruction")) {
                         fasterLeavesDestruction(block);
                     }
                     
@@ -118,6 +121,7 @@ public class LyTreeHelperBlockListener implements Listener {
                 
                 block.setType(Material.AIR);
                 
+                // If the player is not sneaking destroy the tree
                 if(!player.isSneaking()) {
                     TreeDestroyer.destroy(player, block, wconfig, plugin);
                 }

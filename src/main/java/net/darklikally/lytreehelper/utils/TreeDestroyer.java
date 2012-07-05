@@ -20,10 +20,11 @@ package net.darklikally.lytreehelper.utils;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
 import net.darklikally.lytreehelper.bukkit.WorldConfiguration;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -32,6 +33,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.spout.api.ChatColor;
 
 /**
  * 
@@ -42,6 +44,12 @@ public class TreeDestroyer {
     
     public static ArrayList<Block> destroy(Player player, Block block,
             WorldConfiguration wconfig, LyTreeHelperPlugin plugin) {
+        
+        // Cancel destruction if the player cannot use the full destruction
+        if(plugin.hasPermission(player, "lytreehelper.destruction.nofulldestruction")) {
+            return null;
+        }
+        
         ArrayList<Block> blocks = new ArrayList<Block>();
         
         blocks = TreeDetector.detect(block, plugin);
@@ -55,17 +63,27 @@ public class TreeDestroyer {
         
         boolean destroyed = destroyTree(blocks, wconfig, plugin);
         
-        if(wconfig.enableAutoPlantSapling && blocks.size() > 5) {
+        if(wconfig.enableAutoPlantSapling
+                && blocks.size() > 5
+                && plugin.hasPermission(player, "lytreehelper.noautoplantsapling")) {
             plantSapling(block, saplingData);
         }
         
-        if(wconfig.creaturesToSpawnInTrees.size() > 0 && blocks.size() > 5) {
+        if(wconfig.creaturesToSpawnInTrees.size() > 0
+                && blocks.size() > 5
+                && !plugin.hasPermission(player, "lytreehelper.creatures.nospawn")) {
             spawnCreature(block, wconfig, plugin);
+        }
+        
+        if(wconfig.enableEconomySupport
+                && blocks.size() > 8
+                && !plugin.hasPermission(player, "lytreehelper.economy.freechopping")) {
+            handleEconomy(player, wconfig, plugin);
         }
         
         return  destroyed ? blocks : null;
     }
-    
+
     private static boolean destroyTree(ArrayList<Block> blocks,
             WorldConfiguration wconfig, LyTreeHelperPlugin plugin) {
         
@@ -123,6 +141,22 @@ public class TreeDestroyer {
             @SuppressWarnings("unused")
             LivingEntity creature = CreatureSpawner.spawn(
                     block.getLocation(), type, wconfig, plugin);
+        }
+    }
+    
+    private static void handleEconomy(Player player,
+            WorldConfiguration wconfig, LyTreeHelperPlugin plugin) {
+            
+        Economy economy = plugin.getEconomy();
+        
+        if(economy == null) {
+            return;
+        }
+        
+        EconomyResponse response = economy.withdrawPlayer(player.getName(), wconfig.costsOnFullDestruction);
+        
+        if(response.transactionSuccess()) {
+            player.sendMessage(ChatColor.YELLOW + "You have paid " + wconfig.costsOnFullDestruction + " for chopping this tree.");
         }
     }
     

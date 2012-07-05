@@ -5,7 +5,6 @@ Todo for the next version:
 - Add some debug functions
 - Add option to disable drops on full destruction (only drop the destroyed source block);
 - Rewrite the rest of the code (in progress) Todo:
-  - Economy Support
   - Forest database
 
 v3.0.0 (not released yet, only on the github repository)
@@ -23,6 +22,7 @@ v3.0.0 (not released yet, only on the github repository)
 - Moved drop management into it's own class
 - Added all the new creatures to the spawn mechanism
 - Rewritten apple drops over time
+- Rewritten economy support based on Vault
 
 v2.5.1
 - Fixed priorities to work fine with WorldGuard, BigBrother and other plugins

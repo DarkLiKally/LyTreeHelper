@@ -73,8 +73,9 @@ public class WorldConfiguration {
     public boolean onlyWoodDestruction;
     
     public boolean enableOnlyTopDownDrops;
-    public boolean enableAppleDropsOverTime;
+    public boolean enableDropsOverTime;
     public double appleDropOverTimeChance;
+    public Map<String, Double> customDropsOverTime;
     public double appleDropChance;
     public double goldenAppleDropChance;
     public double leavesBlockDropChance;
@@ -246,7 +247,15 @@ public class WorldConfiguration {
         onlyWoodDestruction = getBoolean("tree-destruction.only-wood-destruction", false);
         
         enableOnlyTopDownDrops = getBoolean("drops.enable-only-top-down-drops", false);
-        enableAppleDropsOverTime = getBoolean("drops.enable-apple-drops-over-time", true);
+        enableDropsOverTime = getBoolean("drops.enable-drops-over-time", true);
+        
+        customDropsOverTime = new HashMap<String, Double>();
+        if(getKeys("drops.custom-drops-over-time") != null && getKeys("drops.custom-drops-over-time").size() != 0) {
+            for (String item : getKeys("drops.custom-drops-over-time")) {
+                customDropsOverTime.put(item, getDouble("drops.custom-drops-over-time." + item, 10.0));
+            }
+        }
+        
         appleDropOverTimeChance = getDouble("drops.apple-drop-over-time-chance", 1.0);
         appleDropChance = getDouble("drops.apple-drop-chance", 1.0);
         goldenAppleDropChance = getDouble("drops.golden-apple-drop-chance", 0.1);
@@ -312,8 +321,9 @@ public class WorldConfiguration {
         logger.info(lytree + "Enable full tree destruction: " + enableFullTreeDestruction);
         logger.info(lytree + "Only wood destruction: " + onlyWoodDestruction);
         logger.info(lytree + "Enable only top-down drops: " + enableOnlyTopDownDrops);
-        logger.info(lytree + "Enable apple drops over time: " + enableAppleDropsOverTime);
+        logger.info(lytree + "Enable apple drops over time: " + enableDropsOverTime);
         logger.info(lytree + "Apple drop over time chance: " + appleDropOverTimeChance);
+        logger.info(lytree + "Custom drop over time number: " + customDropsOverTime.size());
         logger.info(lytree + "Apple drop chance: " + appleDropChance);
         logger.info(lytree + "Golden apple drop chance: " + goldenAppleDropChance);
         logger.info(lytree + "Leaves block drop chacne: " + leavesBlockDropChance);

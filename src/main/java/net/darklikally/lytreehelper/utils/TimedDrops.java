@@ -53,7 +53,7 @@ public class TimedDrops implements Runnable {
         for (Player player : players) {
             wconfig = config.getWorldConfig(player.getWorld());
 
-            if (wconfig.enableAppleDropsOverTime) {
+            if (wconfig.enableDropsOverTime) {
                 Location playerLoc = player.getLocation();
 
                 for (int x = playerLoc.getBlockX() - 4; x <= playerLoc
@@ -66,17 +66,9 @@ public class TimedDrops implements Runnable {
 
                             if (block.getType() == Material.LEAVES) {
                                 if (block.getRelative(BlockFace.DOWN).getType() == Material.AIR) {
-                                    double rand = new Random().nextDouble() * 100;
 
-                                    if (rand <= wconfig.appleDropOverTimeChance) {
-                                        ItemStack stack = new ItemStack(
-                                                Material.APPLE, 1);
-
-                                        player.getWorld().dropItemNaturally(
-                                                block.getRelative(
-                                                        BlockFace.DOWN)
-                                                        .getLocation(), stack);
-                                    }
+                                    TreeDropManager.dropTimedDrops(block.getRelative(BlockFace.DOWN), wconfig);
+                                    
                                 }
                                 break;
                             }

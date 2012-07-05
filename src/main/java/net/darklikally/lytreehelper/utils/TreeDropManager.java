@@ -33,53 +33,61 @@ import net.darklikally.lytreehelper.bukkit.WorldConfiguration;
 /**
  * 
  * @author DarkLiKally
- *
+ * 
  */
 public class TreeDropManager {
-    
+
     public static boolean dropLeaveItems(Block block, WorldConfiguration wconfig) {
-        
+
         Random gen = new Random();
-        int maxItemsPerBlock = 3;;
-        
-        for(int i = 0; i < maxItemsPerBlock; i++) {
+        int maxItemsPerBlock = 3;
+
+        for (int i = 0; i < maxItemsPerBlock; i++) {
             int item = gen.nextInt(5);
-            
-            if(item < 3) {
+
+            if (item < 3) {
                 ItemStack stack = null;
-                if(gen.nextDouble() * 100 <= wconfig.appleDropChance) {
+                if (gen.nextDouble() * 100 <= wconfig.appleDropChance) {
                     stack = new ItemStack(Material.APPLE, 1);
-                } else if(gen.nextDouble() * 100 <= wconfig.goldenAppleDropChance) {
+                } else if (gen.nextDouble() * 100 <= wconfig.goldenAppleDropChance) {
                     stack = new ItemStack(Material.GOLDEN_APPLE, 1);
-                } else if(gen.nextDouble() * 100 <= wconfig.leavesBlockDropChance) {
-                    stack = new ItemStack(Material.LEAVES, 1, (short) 0, (byte)(block.getData() & ~0x8));
-                } else if(gen.nextDouble() * 100 <= wconfig.saplingDropChance) {
-                    stack = new ItemStack(Material.SAPLING, 1, (short) 0, (byte)(block.getData() & ~0x8));
+                } else if (gen.nextDouble() * 100 <= wconfig.leavesBlockDropChance) {
+                    stack = new ItemStack(Material.LEAVES, 1, (short) 0,
+                            (byte) (block.getData() & ~0x8));
+                } else if (gen.nextDouble() * 100 <= wconfig.saplingDropChance) {
+                    stack = new ItemStack(Material.SAPLING, 1, (short) 0,
+                            (byte) (block.getData() & ~0x8));
                 }
-                
+
                 // If we have a stack, drop it
-                if(stack != null) {
-                    TreeDropManager.dropItemNaturally(
-                            block.getWorld(), block.getLocation(), stack);
+                if (stack != null) {
+                    TreeDropManager.dropItemNaturally(block.getWorld(),
+                            block.getLocation(), stack);
                 }
                 continue;
             } else {
-                if(wconfig.customDrops != null && wconfig.customDrops.size() != 0) {
-                    Iterator<Map.Entry<String, Double>> iterator =
-                        wconfig.customDrops.entrySet().iterator();
-                    while(iterator.hasNext()) {
-                        Map.Entry<String, Double> pair = (Map.Entry<String, Double>) iterator.next();
-                        if(gen.nextDouble() * 100 <= pair.getValue()) {
+                if (wconfig.customDrops != null
+                        && wconfig.customDrops.size() != 0) {
+
+                    Iterator<Map.Entry<String, Double>> iterator = wconfig.customDrops
+                            .entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, Double> pair = (Map.Entry<String, Double>) iterator
+                                .next();
+                        if (gen.nextDouble() * 100 <= pair.getValue()) {
                             String[] itemType = pair.getKey().split(",");
-                            ItemStack stack =
-                                new ItemStack(Material.getMaterial(Integer.parseInt(itemType[0])), 1);
-                            
-                            if(itemType.length > 1) {
-                                stack.setDurability(Short.parseShort(itemType[1]));
+                            ItemStack stack = new ItemStack(
+                                    Material.getMaterial(Integer
+                                            .parseInt(itemType[0])), 1);
+
+                            if (itemType.length > 1) {
+                                stack.setDurability(Short
+                                        .parseShort(itemType[1]));
                             }
-                            
-                            TreeDropManager.dropItemNaturally(block.getWorld(), block.getLocation(), stack);
-                            
+
+                            TreeDropManager.dropItemNaturally(block.getWorld(),
+                                    block.getLocation(), stack);
+
                             break;
                         }
                     }
@@ -87,11 +95,66 @@ public class TreeDropManager {
                 continue;
             }
         }
-        
+
         return true;
     }
-    
-    public static void dropItemNaturally(World world, Location loc, ItemStack stack) {
+
+    public static boolean dropTimedDrops(Block block, WorldConfiguration wconfig) {
+
+        Random gen = new Random();
+        int maxItemsPerBlock = 1;
+
+        for (int i = 0; i < maxItemsPerBlock; i++) {
+            int item = gen.nextInt(6);
+
+            if (item < 3) {
+                ItemStack stack = null;
+                if (gen.nextDouble() * 100 <= wconfig.appleDropOverTimeChance) {
+                    stack = new ItemStack(Material.APPLE, 1);
+                }
+
+                // If we have a stack, drop it
+                if (stack != null) {
+                    TreeDropManager.dropItemNaturally(block.getWorld(),
+                            block.getLocation(), stack);
+                }
+                continue;
+            } else {
+                if (wconfig.customDropsOverTime != null
+                        && wconfig.customDropsOverTime.size() != 0) {
+
+                    Iterator<Map.Entry<String, Double>> iterator = wconfig.customDropsOverTime
+                            .entrySet().iterator();
+                    while (iterator.hasNext()) {
+                        Map.Entry<String, Double> pair = (Map.Entry<String, Double>) iterator
+                                .next();
+                        if (gen.nextDouble() * 100 <= pair.getValue()) {
+                            String[] itemType = pair.getKey().split(",");
+                            ItemStack stack = new ItemStack(
+                                    Material.getMaterial(Integer
+                                            .parseInt(itemType[0])), 1);
+
+                            if (itemType.length > 1) {
+                                stack.setDurability(Short
+                                        .parseShort(itemType[1]));
+                            }
+
+                            TreeDropManager.dropItemNaturally(block.getWorld(),
+                                    block.getLocation(), stack);
+
+                            break;
+                        }
+                    }
+                }
+                continue;
+            }
+        }
+
+        return true;
+    }
+
+    public static void dropItemNaturally(World world, Location loc,
+            ItemStack stack) {
         world.dropItemNaturally(loc, stack);
     }
 }

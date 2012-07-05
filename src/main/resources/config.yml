@@ -74,8 +74,23 @@ default-world-configuration:
         # If enabled, LyTreeHelper will cause apple drops from trees over time.
         # Don't forget to set the drop chance!
         # "apple-drops-over-time-chance" must be a double from 0.0 to 100.0
-        enable-apple-drops-over-time: true
+        enable-drops-over-time: true
         apple-drop-over-time-chance: 1.0
+        
+        # Custom drops over time 
+        # Custom drops must match the following mask
+        #     "itemId": dropChance
+        #
+        # itemId is the id of the item which should be dropped.
+        # dropChance can be a decimal number from 0.0 to 100.0
+        #
+        # Example:
+        # custom-drops-over-time:
+        #     "2": 10.0
+        #     "3": 38.2
+        #     "35,14": 5.0 //Red wool
+        # Note: Remove the [] first
+        custom-drops-over-time: []
 
         # The following options can be a decimal number from 0.0 to 100.0
         # Use this settings to modify the drop chance of apples, golden apples, leave blocks and saplings from leaves. 
@@ -149,3 +164,6 @@ default-world-configuration:
         TallBirch:
             biomes: [FOREST, SEASONAL_FOREST]
             chance: 5.0
+
+# The version of the config file
+version: 1.0

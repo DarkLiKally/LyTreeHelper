@@ -83,6 +83,7 @@ public class ConfigurationManager {
     public boolean enableHighStackSize;
     public int maxTreeSize;
     public int maxTreeRadius;
+    public String version;
 
     /**
      * Construct the object.
@@ -121,6 +122,7 @@ public class ConfigurationManager {
         enableHighStackSize = config.getBoolean("system.enable-high-stack-size", false);
         maxTreeSize = config.getInt("system.max-tree-size", 1600);
         maxTreeRadius = config.getInt("system.max-tree-radius", 5);
+        version = config.getString("version", "unknown");
         
         // Adjust the maxTreeSize
         if(enableHighStackSize && maxTreeSize > 6000) {
@@ -182,5 +184,6 @@ public class ConfigurationManager {
         logger.info(lytree + "Enable high stack size: " + enableHighStackSize);
         logger.info(lytree + "Max tree size: " + maxTreeSize);
         logger.info(lytree + "Max tree radius: " + maxTreeRadius);
+        logger.info(lytree + "Configuration version: " + version);
     }
 }

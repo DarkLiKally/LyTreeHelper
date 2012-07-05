@@ -22,7 +22,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import net.darklikally.bukkit.util.TargetBlock;
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
 import net.darklikally.lytreehelper.generators.MammothTreeGenerator;
 import net.darklikally.lytreehelper.generators.TreeGenerator;

@@ -19,6 +19,8 @@
 package net.darklikally.lytreehelper.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
@@ -64,13 +66,13 @@ public class TreeDestroyer {
         boolean destroyed = destroyTree(blocks, wconfig, plugin);
         
         if(wconfig.enableAutoPlantSapling
-                && blocks.size() > 5
-                && plugin.hasPermission(player, "lytreehelper.noautoplantsapling")) {
+                && blocks.size() > 8
+                && !plugin.hasPermission(player, "lytreehelper.noautoplantsapling")) {
             plantSapling(block, saplingData);
         }
         
         if(wconfig.creaturesToSpawnInTrees.size() > 0
-                && blocks.size() > 5
+                && blocks.size() > 8
                 && !plugin.hasPermission(player, "lytreehelper.creatures.nospawn")) {
             spawnCreature(block, wconfig, plugin);
         }
@@ -165,15 +167,23 @@ public class TreeDestroyer {
     }
     
     private static Block getSurfaceBlockBelow(Block block) {
+        List<Material> blocksToIgnore = Arrays.asList(
+                Material.AIR,
+                Material.LOG,
+                Material.VINE,
+                Material.LEAVES);
+        
         Block surfaceBlock = 
             block.getWorld().getHighestBlockAt(block.getLocation());
         
         if(surfaceBlock.getY() > block.getY()) {
             for(int y = 0; y <= 30; y++) {
-                surfaceBlock = block.getRelative(BlockFace.DOWN);
+                if(y > 0) {
+                    surfaceBlock = block.getRelative(BlockFace.DOWN);
+                }
                 if((surfaceBlock.getType() == Material.DIRT
                         || surfaceBlock.getType() == Material.GRASS)
-                        && surfaceBlock.getRelative(BlockFace.UP).getType() == Material.AIR) {
+                        && blocksToIgnore.contains(surfaceBlock.getRelative(BlockFace.UP).getType())) {
                     return surfaceBlock;
                 }
             }

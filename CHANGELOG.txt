@@ -7,7 +7,7 @@ Todo for the next version:
 - Rewrite the rest of the code (in progress) Todo:
   - Forest database
 
-v3.0.0 (not released yet, only on the github repository)
+v3.0.0 (still beta)
 - Initial setup to rewrite the whole code
 - Rewritten core functions (permissions, economy, commands, ...)
     (thanks to sk89q for the nice command system and Vault for the great permission and economy libraries)

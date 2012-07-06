@@ -1,6 +1,6 @@
 name: LyTreeHelper
 main: net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin
-version: 3.0-SNAPSHOT
+version: 3.0-BETA
 authors:
     - DarkLiKally
 website: http://darklikally.net

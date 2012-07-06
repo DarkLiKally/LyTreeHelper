@@ -113,7 +113,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         commandHandler.registerCommands();
         
         // Setup Vault
-        if (!setupEconomy()) {
+        if (!checkForVault()) {
             getLogger()
                     .severe(String
                             .format("[%s] - Disabled due to no Vault dependency found!",
@@ -121,6 +121,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        setupEconomy();
         setupPermissions();
         setupChat();
 
@@ -164,12 +165,26 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     }
 
     /**
+     * Check whether Vault is installed on the server
+     * 
+     * @return
+     */
+    private boolean checkForVault() {
+        if(getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
      * Setup the Vault Economy Handler
      * 
      * @return
      */
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            economy = null;
             return false;
         }
         RegisteredServiceProvider<Economy> rsp = getServer()
@@ -315,6 +330,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * @return
      */
     public boolean hasPermission(Player player, String perm) {
+        if(permissions == null) {
+            return player.isOp();
+        }
         return permissions.has(player, perm);
     }
 
@@ -331,6 +349,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * @return
      */
     public boolean hasPermission(Player player, World world, String perm) {
+        if(permissions == null) {
+            return player.isOp();
+        }
         return permissions.has(world, player.getName(), perm);
     }
 
@@ -355,6 +376,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * @return
      */
     public boolean hasGroup(Player player, String group) {
+        if(permissions == null) {
+            return false;
+        }
         return permissions.playerInGroup(player, group);
     }
 

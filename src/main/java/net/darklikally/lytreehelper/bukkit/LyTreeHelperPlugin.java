@@ -121,9 +121,15 @@ public class LyTreeHelperPlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        setupEconomy();
-        setupPermissions();
-        setupChat();
+        
+        // Try to setup Vault's services (Economy, Permissions and Chat)
+        try {
+            setupEconomy();
+            setupPermissions();
+            setupChat();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Need to create the plugins/LyTreeHelper folder
         getDataFolder().mkdirs();
@@ -171,6 +177,9 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     private boolean checkForVault() {
         if(getServer().getPluginManager().getPlugin("Vault") == null) {
+            economy = null;
+            permissions = null;
+            chat = null;
             return false;
         }
         
@@ -183,15 +192,13 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * @return
      */
     private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            economy = null;
-            return false;
-        }
         RegisteredServiceProvider<Economy> rsp = getServer()
                 .getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
+        
+        if(rsp == null) {
             return false;
         }
+        
         economy = rsp.getProvider();
         return economy != null;
     }
@@ -204,6 +211,11 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = getServer()
                 .getServicesManager().getRegistration(Permission.class);
+        
+        if(rsp == null) {
+            return false;
+        }
+        
         permissions = rsp.getProvider();
         return permissions != null;
     }
@@ -216,6 +228,11 @@ public class LyTreeHelperPlugin extends JavaPlugin {
     private boolean setupChat() {
         RegisteredServiceProvider<Chat> rsp = getServer().getServicesManager()
                 .getRegistration(Chat.class);
+        
+        if(rsp == null) {
+            return false;
+        }
+        
         chat = rsp.getProvider();
         return chat != null;
     }

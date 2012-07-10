@@ -90,8 +90,9 @@ public class WorldConfiguration {
     
     public Set<Integer> fullDestructionTools;
     public Set<Integer> harvestTools;
-    
+
     public Map<Biome, Map<String, Double>> schematics;
+    public Map<Biome, Map<String, Double>> bo2schematics;
     
 
     /**
@@ -123,7 +124,6 @@ public class WorldConfiguration {
                 "Loaded configuration for world '" + worldName + "'");
     }
 
-    @SuppressWarnings("unused")
     private boolean getBoolean(String node, boolean def) {
         boolean val = parentConfig.getBoolean(node, def);
 
@@ -134,7 +134,6 @@ public class WorldConfiguration {
         }
     }
 
-    @SuppressWarnings("unused")
     private String getString(String node, String def) {
         String val = parentConfig.getString(node, def);
 
@@ -156,7 +155,6 @@ public class WorldConfiguration {
         }
     }
 
-    @SuppressWarnings("unused")
     private double getDouble(String node, double def) {
         double val = parentConfig.getDouble(node, def);
 
@@ -167,7 +165,6 @@ public class WorldConfiguration {
         }
     }
 
-    @SuppressWarnings("unused")
     private List<Integer> getIntList(String node, List<Integer> def) {
         List<Integer> res = parentConfig.getIntList(node, def);
 
@@ -182,7 +179,6 @@ public class WorldConfiguration {
         return res;
     }
 
-    @SuppressWarnings("unused")
     private List<String> getStringList(String node, List<String> def) {
         List<String> res = parentConfig.getStringList(node, def);
 
@@ -197,7 +193,6 @@ public class WorldConfiguration {
         return res;
     }
 
-    @SuppressWarnings("unused")
     private List<String> getKeys(String node) {
         List<String> res = parentConfig.getKeys(node);
 
@@ -291,14 +286,26 @@ public class WorldConfiguration {
         harvestTools = new HashSet<Integer>(getIntList("tools.harvest-tools", null));
         
         schematics = new HashMap<Biome, Map<String, Double>>();
+        bo2schematics = new HashMap<Biome, Map<String, Double>>();
         if(getKeys("schematics") != null && getKeys("schematics").size() != 0) {
             for(String schematicName : getKeys("schematics")) {
+                String schematicType = getString("schematics." + schematicName + ".type", null);
+                
                 for(String biomeName : getStringList("schematics." + schematicName + ".biomes", null)) {
                     Biome biome = Biome.valueOf(biomeName.toUpperCase());
-                    if(schematics.get(biome) == null) {
-                        schematics.put(biome, new HashMap<String, Double>());
+                    if(schematicType == "mcedit") {
+                        if(schematics.get(biome) == null) {
+                            schematics.put(biome, new HashMap<String, Double>());
+                        }
+                        schematics.get(biome).put(schematicName, getDouble("schematics." + schematicName + ".chance", 10.0));
+                    } else if(schematicType == "bo2") {
+                        if(bo2schematics.get(biome) == null) {
+                            bo2schematics.put(biome, new HashMap<String, Double>());
+                        }
+                        bo2schematics.get(biome).put(schematicName, getDouble("schematics." + schematicName + ".chance", 10.0));
+                    } else {
+                        plugin.getLogger().warning("[LyTreeHelper] Unknown schematic type: " + schematicName + " -> " + schematicType);
                     }
-                    schematics.get(biome).put(schematicName, getDouble("schematics." + schematicName + ".chance", 10.0));
                 }
             }
         }

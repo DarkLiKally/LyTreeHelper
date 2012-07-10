@@ -28,6 +28,7 @@
         <include>LICENSE.txt</include>
         <include>CHANGELOG.txt</include>
         <include>schematics/*</include>
+        <include>bo2schematics/*</include>
       </includes>
     </fileSet>
   </fileSets>

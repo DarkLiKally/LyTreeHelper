@@ -51,7 +51,11 @@ public class CuboidObject {
         this.size = size;
         data = new BaseBlock[size.getBlockX()][size.getBlockY()][size
                 .getBlockZ()];
-        offset = new Vector();
+        offset = new Vector(
+                (int) Math.round(size.getBlockX() / 2),
+                0,
+                (int) Math.round(size.getBlockZ() / 2)
+                );
     }
 
     /**
@@ -285,7 +289,11 @@ public class CuboidObject {
                         continue;
                     }
 
-                    Vector newPos = new Vector(x + pos.getBlockX(), y + pos.getBlockY(), z + pos.getBlockZ());
+                    Vector newPos = new Vector(
+                            (x + pos.getBlockX()) - offset.getBlockX(),
+                            (y + pos.getBlockY()) - offset.getBlockY(),
+                            (z + pos.getBlockZ()) - offset.getBlockZ()
+                            );
                     
                     BlockUtils.setBlock(new Location(pos.getWorld(),
                             newPos.getBlockX(), newPos.getBlockY(), newPos.getBlockZ()), data[x][y][z]);

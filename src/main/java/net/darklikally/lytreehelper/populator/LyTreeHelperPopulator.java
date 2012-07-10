@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -95,6 +96,18 @@ public class LyTreeHelperPopulator extends BlockPopulator {
     public void populate(World world, Random rng, Chunk source) {
         ArrayList<Block> blocks = getSurfaceBlocks(source, world);
 
+        //TODO: choose a block in the chunk
+        
+        //TODO: choose a tree for the biome of the block
+        
+        //TODO: load the tree into a CuboidObject using MCEditSchematic or Bo2Schematic
+        
+        //TODO: check whether the CuboidObject has enough space to be generated (ignore blocks: air, tall grass, snow, flowers, water, leaves, mushrooms, ...)
+        
+        //TODO: place the CuboidObject
+        
+        //TODO: INFO: use the old Bo2 classes (generator and populator) for the neccessary checks (spawns in water etc.)
+        //TODO: INFO: we can use the random rng from bukkit to choose a tree, maybe?
     }
 
     /**
@@ -104,6 +117,35 @@ public class LyTreeHelperPopulator extends BlockPopulator {
      */
     private void BailError(String reason) {
         // plugin.getLogger().severe(reason);
+    }
+    
+    /**
+     * Checks whether the coordinates of the location are inside the chunk
+     * @see isCoordInChunk(intx, int z, Chunk check)
+     * 
+     * @param loc
+     * @param check
+     * @return
+     */
+    private boolean isCoordInChunk(Location loc, Chunk check) {
+        return isCoordInChunk(loc.getBlockX(), loc.getBlockZ(), check);
+    }
+    
+    /**
+     * Checks whether the coordinates are inside the chunk
+     * 
+     * @param x
+     * @param z
+     * @param check
+     * @return
+     */
+    private boolean isCoordInChunk(int x, int z, Chunk check) {
+        int cX = check.getX() * 16;
+        int cZ = check.getZ() * 16;
+        int cXmax = cX + 15;
+        int cZmax = cZ + 15;
+
+        return (x >= cX) && (cXmax >= x) && (z >= cZ) && (cZmax >= z);
     }
 
     /**

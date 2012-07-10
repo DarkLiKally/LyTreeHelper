@@ -154,16 +154,22 @@ default-world-configuration:
     # The biome list is a string list which may match this examples:
     # [FOREST,RAINFOREST,SEASONAL_FOREST]   or   [BEACH]
     # The chances must be a double from 0.0 to 100.0
+    # Possible type are:
+    # mcedit   for .schematic files placed in the schematics folder
+    # bo2      for .bo2 files placed in the bo2schematics folder
     schematics:
         SmallPalm:
             biomes: [BEACH]
             chance: 30.0
+            type: mcedit
         TallPalm:
             biomes: [BEACH]
             chance: 10.0
+            type: mcedit
         TallBirch:
             biomes: [FOREST, SEASONAL_FOREST]
             chance: 5.0
+            type: mcedit
 
 # The version of the config file
 version: 1.0

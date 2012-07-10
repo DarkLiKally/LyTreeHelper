@@ -45,8 +45,9 @@ import net.darklikally.util.jnbt.Tag;
  * @author DarkLiKally
  * @author sk89q
  */
-public class MCEditSchematic {
+public class MCEditSchematic extends MCSchematic {
 
+    @Override
     public CuboidObject load(File file) throws IOException, Exception {
         FileInputStream stream = new FileInputStream(file);
         NBTInputStream nbtStream = new NBTInputStream(
@@ -120,7 +121,7 @@ public class MCEditSchematic {
         // The size of the loaded schematic
         Vector size = new Vector(width, height, length);
         CuboidObject clipboard = new CuboidObject(size);
-        clipboard.setOffset(new Vector(0,0,0));
+        //clipboard.setOffset(new Vector(0,0,0));
         
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
@@ -139,12 +140,6 @@ public class MCEditSchematic {
         }
         
         return clipboard;
-    }
-
-    public BaseBlock getBlockForId(int id, short data) {
-        BaseBlock block;
-        block = new BaseBlock(id, data);
-        return block;
     }
 
     /**

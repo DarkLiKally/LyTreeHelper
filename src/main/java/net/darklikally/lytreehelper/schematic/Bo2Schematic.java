@@ -36,6 +36,10 @@ import org.bukkit.util.Vector;
  */
 public class Bo2Schematic extends MCSchematic {
 
+    protected Bo2Schematic() {
+        super("bo2");
+    }
+    
     @Override
     public CuboidObject load(File file) throws IOException, Exception {
         Bo2Object object = Bo2Manager.getObjectFromFile(file);
@@ -48,9 +52,9 @@ public class Bo2Schematic extends MCSchematic {
         Vector size = object.getSize();
 
         Vector offset = new Vector(
-                Math.abs(object.getMinX()),
-                Math.abs(object.getMinY()),
-                Math.abs(object.getMinZ())
+                object.getMinX(),
+                object.getMinY(),
+                object.getMinZ()
                 );
         CuboidObject clipboard = new CuboidObject(size, offset);
 
@@ -59,13 +63,17 @@ public class Bo2Schematic extends MCSchematic {
         for (int i = 0; i < blocks.length; i++) {
             Bo2BlockData bo2Block = blocks[i];
             BlockVector pt = new BlockVector(
-                bo2Block.x + offset.getBlockX(),
-                bo2Block.y + offset.getBlockY(),
-                bo2Block.z + offset.getBlockZ()
+                bo2Block.x - offset.getBlockX(),
+                bo2Block.y - offset.getBlockY(),
+                bo2Block.z - offset.getBlockZ()
                 );
             BaseBlock block = getBlockForId(bo2Block.type.getId(), (short) bo2Block.data);
-            
-            clipboard.setBlock(pt, block);
+            try {
+                clipboard.setBlock(pt, block);
+            } catch (IndexOutOfBoundsException e) {
+                // Something goes wrong...
+                e.printStackTrace();
+            }
         }
 
         return clipboard;

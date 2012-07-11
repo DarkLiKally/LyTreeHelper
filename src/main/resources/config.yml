@@ -146,11 +146,13 @@ default-world-configuration:
         harvest-tools: []
 
     # Schematics settings for the custom populator, ignored if enable-custom-populator is set to false
+    # The name of the schematic must be the name of the file, without the fileending (.bo2 or .schematic)
     # Possible biomes are:
     # RAINFOREST, SWAMPLAND, SEASONAL_FOREST, FOREST, SAVANNA, SHRUBLAND, TAIGA, DESERT, PLAINS,
     # ICE_DESERT, TUNDRA, HELL, SKY, OCEAN, RIVER, EXTREME_HILLS, FROZEN_OCEAN, FROZEN_RIVER,
     # ICE_PLAINS, ICE_MOUNTAINS, MUSHROOM_ISLAND, MUSHROOM_SHORE, BEACH, DESERT_HILLS, FOREST_HILLS
     # TAIGA_HILLS, SMALL_MOUNTAINS, JUNGLE, JUNGLE_HILLS
+    # or simply for all biomes ALL
     # The biome list is a string list which may match this examples:
     # [FOREST,RAINFOREST,SEASONAL_FOREST]   or   [BEACH]
     # The chances must be a double from 0.0 to 100.0
@@ -162,6 +164,8 @@ default-world-configuration:
             biomes: [BEACH]
             chance: 30.0
             type: mcedit
+            offset:
+                x: -2
         TallPalm:
             biomes: [BEACH]
             chance: 10.0

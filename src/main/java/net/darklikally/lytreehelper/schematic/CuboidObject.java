@@ -290,9 +290,9 @@ public class CuboidObject {
                     }
 
                     Vector newPos = new Vector(
-                            (x + pos.getBlockX()) - offset.getBlockX(),
-                            (y + pos.getBlockY()) - offset.getBlockY(),
-                            (z + pos.getBlockZ()) - offset.getBlockZ()
+                            (x + pos.getBlockX()) + offset.getBlockX(),
+                            (y + pos.getBlockY()) + offset.getBlockY(),
+                            (z + pos.getBlockZ()) + offset.getBlockZ()
                             );
                     
                     BlockUtils.setBlock(new Location(pos.getWorld(),

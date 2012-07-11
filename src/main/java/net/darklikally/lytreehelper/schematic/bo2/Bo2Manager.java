@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
 
 /**
+ * BOB Editor: http://faskerstudio.com/minecraft/BBOB
  * 
  * @author DarkLiKally
  */
@@ -39,12 +40,12 @@ public class Bo2Manager {
     static LyTreeHelperPlugin plugin;
 
     /**
-     * BOB2 Objects list BOB Editor: http://faskerstudio.com/minecraft/BBOB
+     * Bo2 Objects list.
      */
     private static HashMap<String, Bo2Object> objects = new HashMap<String, Bo2Object>();
 
     /**
-     * Init method to load all bo2 files
+     * Initialization method to load all bo2 files
      * 
      * @return
      */
@@ -156,26 +157,46 @@ public class Bo2Manager {
 
             Bo2Object object = ReadBo2File(files[i]);
 
-            if(object != null) {
+            if (object != null) {
                 objects.put(files[i].getName(), object);
             }
         }
     }
-    
+
     public static Bo2Object getObjectFromFile(File file) {
-        if(objects.get(file.getName()) == null) {
+        if (!objects.containsKey(file.getName())) {
             try {
                 Bo2Object object = ReadBo2File(file);
-                
-                if(object != null) {
+
+                if (object != null) {
                     objects.put(file.getName(), object);
                 }
             } catch (FileNotFoundException e) {
                 return null;
             }
         }
-        
-        return objects.get(file.getName()); 
+
+        return objects.get(file.getName());
+    }
+    /**
+     * Forget an object
+     * @see forgetObject(String fileName)
+     * 
+     * @param file
+     */
+    public static void forgetObject(File file) {
+        forgetObject(file.getName());
+    }
+    
+    /**
+     * Forget an object
+     * 
+     * @param fileName
+     */
+    public static void forgetObject(String fileName) {
+        if(objects.containsKey(fileName)) {
+            objects.remove(fileName);
+        }
     }
 
     public static ArrayList<Bo2Object> getTrees() {

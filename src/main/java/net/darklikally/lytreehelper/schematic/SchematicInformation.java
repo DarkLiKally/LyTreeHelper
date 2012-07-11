@@ -18,23 +18,20 @@
  */
 package net.darklikally.lytreehelper.schematic;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Set;
+
+import org.bukkit.block.Biome;
 
 /**
  * 
  * @author DarkLiKally
  *
  */
-public interface IMCSchematic {
-    
-    /**
-     * Load the requested file
-     * 
-     * @param file
-     * @return
-     * @throws IOException
-     * @throws Exception
-     */
-    public CuboidObject load(File file) throws IOException, Exception;
+public class SchematicInformation {
+    public String name;
+    public Set<Biome> biomes;
+    public boolean allBiomes;
+    public double chance;
+    public String type;
+    public String file;
 }

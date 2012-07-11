@@ -83,6 +83,11 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      * Vault Chat Handler
      */
     private static Chat chat = null;
+    
+    /**
+     * Custom World Populator
+     */
+    private final LyTreeHelperPopulator populator;
 
     /**
      * Construct objects. Actual loading occurs when the plugin is enabled, so
@@ -100,6 +105,8 @@ public class LyTreeHelperPlugin extends JavaPlugin {
             }
         };
         commandHandler = new LyTreeHelperCommands(this);
+        
+        populator = new LyTreeHelperPopulator(this);
     }
 
     /**
@@ -159,7 +166,7 @@ public class LyTreeHelperPlugin extends JavaPlugin {
         getServer().getScheduler().scheduleAsyncRepeatingTask(this, new TimedDrops(this), 200, 1200);
 
         // Register custom world populator
-        (new LyTreeHelperPopulator(this)).initialize();
+        populator.initialize();
     }
 
     /**
@@ -263,6 +270,15 @@ public class LyTreeHelperPlugin extends JavaPlugin {
      */
     public ConfigurationManager getGlobalConfigurationManager() {
         return configuration;
+    }
+    
+    /**
+     * Get the plugin's custom world populator.
+     * 
+     * @return
+     */
+    public LyTreeHelperPopulator getPopulator() {
+        return populator;
     }
 
     /**

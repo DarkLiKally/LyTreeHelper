@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 
+import net.darklikally.lytreehelper.schematic.SchematicInformation;
 import net.darklikally.sk89q.util.yaml.YAMLFormat;
 import net.darklikally.sk89q.util.yaml.YAMLNode;
 import net.darklikally.sk89q.util.yaml.YAMLProcessor;
@@ -91,8 +92,7 @@ public class WorldConfiguration {
     public Set<Integer> fullDestructionTools;
     public Set<Integer> harvestTools;
 
-    public Map<Biome, Map<String, Double>> schematics;
-    public Map<Biome, Map<String, Double>> bo2schematics;
+    public Set<SchematicInformation> schematics;
     
 
     /**
@@ -285,28 +285,65 @@ public class WorldConfiguration {
         fullDestructionTools = new HashSet<Integer>(getIntList("tools.full-destruction-tools", null));
         harvestTools = new HashSet<Integer>(getIntList("tools.harvest-tools", null));
         
-        schematics = new HashMap<Biome, Map<String, Double>>();
-        bo2schematics = new HashMap<Biome, Map<String, Double>>();
+        schematics = new HashSet<SchematicInformation>();
         if(getKeys("schematics") != null && getKeys("schematics").size() != 0) {
             for(String schematicName : getKeys("schematics")) {
                 String schematicType = getString("schematics." + schematicName + ".type", null);
                 
+                String fileExtension;
+                
+                if(schematicType.equalsIgnoreCase("mcedit")) {
+                    fileExtension = ".schematic";
+                } else if(schematicType.equalsIgnoreCase("bo2")) {
+                    fileExtension = ".bo2";
+                } else {
+                    // We have an unknown schematic type in the configuration, just ignore it
+                    continue;
+                }
+                
+                String fileName = schematicName + fileExtension;
+                if (!fileName.matches("^[A-Za-z0-9_\\- \\./\\\\'\\$@~!%\\^\\*\\(\\)\\[\\]\\+\\{\\},\\?]+\\.[A-Za-z0-9]+$")) {
+                    // The given filename cannot be a real filename, so ignore it
+                    continue;
+                }
+                
+                File schematicFile = new File(new File(plugin.getDataFolder(), "schematics"), fileName);
+                
+                if(!schematicFile.exists()) {
+                    // The schematic file doesn't exist, we can ignore the configuration entry
+                    continue;
+                }
+                
+                Set<Biome> biomes = new HashSet<Biome>();
+                boolean allBiomes = false;
                 for(String biomeName : getStringList("schematics." + schematicName + ".biomes", null)) {
+                    // If we have ALL in the biome list, we can ignore the other items
+                    if(biomeName.toUpperCase() == "ALL") {
+                        biomes = null;
+                        allBiomes = true;
+                        break;
+                    }
+                    
                     Biome biome = Biome.valueOf(biomeName.toUpperCase());
-                    if(schematicType == "mcedit") {
-                        if(schematics.get(biome) == null) {
-                            schematics.put(biome, new HashMap<String, Double>());
-                        }
-                        schematics.get(biome).put(schematicName, getDouble("schematics." + schematicName + ".chance", 10.0));
-                    } else if(schematicType == "bo2") {
-                        if(bo2schematics.get(biome) == null) {
-                            bo2schematics.put(biome, new HashMap<String, Double>());
-                        }
-                        bo2schematics.get(biome).put(schematicName, getDouble("schematics." + schematicName + ".chance", 10.0));
-                    } else {
-                        plugin.getLogger().warning("[LyTreeHelper] Unknown schematic type: " + schematicName + " -> " + schematicType);
+                    
+                    if(biome != null) {
+                        // If it is a valid biome, add it to the list
+                        biomes.add(biome);
                     }
                 }
+                
+                // Finally we have our schematic information complete, so create a new SchematicInformation
+                // and add it to the schematics collection of the world
+                SchematicInformation schematicInfo = new SchematicInformation();
+                
+                schematicInfo.name = schematicName;
+                schematicInfo.biomes = biomes;
+                schematicInfo.allBiomes = allBiomes;
+                schematicInfo.chance = getDouble("schematics." + schematicName + ".chance", 10.0);
+                schematicInfo.type = schematicType;
+                schematicInfo.file = fileName;
+                
+                schematics.add(schematicInfo);
             }
         }
         
@@ -342,5 +379,6 @@ public class WorldConfiguration {
         logger.info(lytree + "Creature spawn in tree chance: " + creatureSpawnChance);
         logger.info(lytree + "Number of full destruction tools: " + fullDestructionTools.size());
         logger.info(lytree + "Number of harvest tools: " + harvestTools.size());
+        logger.info(lytree + "Number of schematics: " + schematics.size());
     }
 }

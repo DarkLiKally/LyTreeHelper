@@ -47,6 +47,10 @@ import net.darklikally.util.jnbt.Tag;
  */
 public class MCEditSchematic extends MCSchematic {
 
+    protected MCEditSchematic() {
+        super("mcedit");
+    }
+    
     @Override
     public CuboidObject load(File file) throws IOException, Exception {
         FileInputStream stream = new FileInputStream(file);

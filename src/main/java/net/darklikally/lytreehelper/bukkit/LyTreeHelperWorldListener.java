@@ -56,9 +56,12 @@ public class LyTreeHelperWorldListener implements Listener {
      * @param world
      *            The specified world
      */
-    @SuppressWarnings("unused")
     public void initializeWorld(World world) {
         ConfigurationManager config = plugin.getGlobalConfigurationManager();
         WorldConfiguration wconfig = config.getWorldConfig(world);
+        
+        if(wconfig.enableCustomPopulator) {
+            plugin.getPopulator().registerPopulator(world);
+        }
     }
 }

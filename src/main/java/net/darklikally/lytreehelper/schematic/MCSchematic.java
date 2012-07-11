@@ -20,16 +20,42 @@ package net.darklikally.lytreehelper.schematic;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import net.darklikally.lytreehelper.blocks.BaseBlock;
 
 /**
  * 
  * @author DarkLiKally
- *
+ * @author sk89q
+ * 
  */
-public class MCSchematic implements IMCSchematic {
+public abstract class MCSchematic {
+    private static final Map<String, MCSchematic> schematicFormats = new HashMap<String, MCSchematic>();
 
+    private final String name;
+
+    protected MCSchematic(String name) {
+        this.name = name;
+    }
+
+    public static Set<MCSchematic> getAllFormats() {
+        return Collections.unmodifiableSet(new HashSet<MCSchematic>(
+                schematicFormats.values()));
+    }
+
+    public static MCSchematic getFormat(String name) {
+        return schematicFormats.get(name.toLowerCase());
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
     /**
      * Returns a new basic block information.
      * 
@@ -43,9 +69,6 @@ public class MCSchematic implements IMCSchematic {
         return block;
     }
 
-    @Override
-    public CuboidObject load(File file) throws IOException, Exception {
-        return null;
-    }
+    public abstract CuboidObject load(File file) throws IOException, Exception;
 
 }

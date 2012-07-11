@@ -94,7 +94,6 @@ public class TreeDetector {
         WorldConfiguration wconfig = config.getWorldConfig(source.getWorld());
         ArrayList<Block> blocks = new ArrayList<Block>();
         
-        @SuppressWarnings("unused")
         boolean returned = 
             detectTree(source, source, true, blocks, config, wconfig, plugin, false);
         

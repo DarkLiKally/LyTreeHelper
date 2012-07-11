@@ -470,6 +470,8 @@ public final class BlockData {
                 return (16 - data) & 0xf;
             case WEST_EAST:
                 return (8 - data) & 0xf;
+            default:
+                break;
             }
             break;
 

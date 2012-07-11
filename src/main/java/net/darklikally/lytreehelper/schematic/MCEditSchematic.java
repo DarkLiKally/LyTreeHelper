@@ -60,12 +60,14 @@ public class MCEditSchematic extends MCSchematic {
         // Schematic tag
         CompoundTag schematicTag = (CompoundTag) nbtStream.readTag();
         if(!schematicTag.getName().equals("Schematic")) {
+            nbtStream.close();
             throw new Exception("Tag \"Schematic\" does not exist or is not first");
         }
         
         // Check
         Map<String, Tag> schematic = schematicTag.getValue();
         if(!schematic.containsKey("Blocks")) {
+            nbtStream.close();
             throw new Exception("Schematic file is missing a \"Blocks\" tag");
         }
         
@@ -77,6 +79,7 @@ public class MCEditSchematic extends MCSchematic {
         // Check type of Schematic
         String materials = getChildTag(schematic, "Materials", StringTag.class).getValue();
         if (!materials.equals("Alpha")) {
+            nbtStream.close();
             throw new Exception("Schematic file is not an Alpha schematic");
         }
 
@@ -143,6 +146,7 @@ public class MCEditSchematic extends MCSchematic {
             }
         }
         
+        nbtStream.close();
         return clipboard;
     }
 

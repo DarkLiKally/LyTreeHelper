@@ -17,11 +17,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.darklikally.lytreehelper.generators;
+package net.darklikally.lytreehelper.generators.custom;
+
+import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
+import net.darklikally.lytreehelper.bukkit.WorldConfiguration;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -29,9 +33,7 @@ import org.bukkit.entity.Player;
  *
  * @author DarkLiKally
  */
-public class MammothTreeGenerator implements Runnable {
-    private boolean isRunning = true;
-
+public class MammothTreeGenerator extends RunnableCustomTreeGenerator {
     private Player player;
     private Location loc;
     private int trunkWidth;
@@ -41,19 +43,14 @@ public class MammothTreeGenerator implements Runnable {
     private boolean standardCrownSteps = true;
     private int generateCrownSteps = 7;
 
-    public MammothTreeGenerator() {
-        this.isRunning = false;
-    }
-
-    public MammothTreeGenerator(Player entity, Location location, int width) {
-        this(entity, location, width,
-                true, 7);
-    }
-
-    public MammothTreeGenerator(Player entity, Location location, int width,
-            boolean stdCrownSteps, int genCrownSteps) {
+    public MammothTreeGenerator(Location loc, World world, String[] args,
+            LyTreeHelperPlugin plugin, WorldConfiguration wconfig,
+            Player entity, int width, boolean stdCrownSteps, int genCrownSteps) {
+        
+        // Call the constructor of the parent class (@see RunnableCustomTreeGenerator) 
+        super(loc, world, plugin, wconfig, args);
+        
         this.player = entity;
-        this.loc = location;
         this.trunkWidth = width;
         this.trunkHeight = width * 6;
 
@@ -85,7 +82,7 @@ public class MammothTreeGenerator implements Runnable {
         this.trunkWidth = origWidth;
         this.trunkHeight = origHeight;
 
-        this.pauseGen(this.timeToSleep);
+        this.pause(this.timeToSleep);
 
         this.generateBranches();
         this.generateBranches();
@@ -113,7 +110,7 @@ public class MammothTreeGenerator implements Runnable {
         }
 
         player.sendMessage(ChatColor.GREEN + "Mammoth tree successfully generated!");
-        this.isRunning = false;
+        setRunning(false);
     }
 
     private void generateTrunk() {
@@ -134,7 +131,7 @@ public class MammothTreeGenerator implements Runnable {
                     z = 1 + (-1 * z);
 
                     this.changeRelativeBlockType(this.loc, x, y, z, Material.LOG);
-                    this.pauseGen(this.timeToSleep);
+                    this.pause(this.timeToSleep);
                 }
                 tempTrunkWidth -= 2;
                 z++;
@@ -170,7 +167,7 @@ public class MammothTreeGenerator implements Runnable {
                     this.getRandomZ() * -1,
                     Material.LOG);
 
-            pauseGen(this.timeToSleep);
+            pause(this.timeToSleep);
         }
     }
 
@@ -229,7 +226,7 @@ public class MammothTreeGenerator implements Runnable {
 
             topLoc = this.changeRelativeBlockType(topLoc, x, y, z, Material.LOG);
 
-            this.pauseGen(this.timeToSleep);
+            this.pause(this.timeToSleep);
         }
     }
 
@@ -269,17 +266,5 @@ public class MammothTreeGenerator implements Runnable {
         } catch(Exception e) {
             return block.getLocation();
         }
-    }
-
-    private void pauseGen(int time) {
-        try {
-            Thread.sleep(time);
-        } catch(Exception e) {
-            player.sendMessage(ChatColor.DARK_RED + "Could not create the tree!");
-        }
-    }
-
-    public boolean isRunning() {
-        return this.isRunning;
     }
 }

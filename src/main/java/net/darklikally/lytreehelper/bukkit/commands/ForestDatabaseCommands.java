@@ -23,9 +23,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
-import net.darklikally.lytreehelper.generators.MammothTreeGenerator;
 import net.darklikally.lytreehelper.generators.TreeGenerator;
 import net.darklikally.lytreehelper.generators.TreeGenerator.TreeType;
+import net.darklikally.lytreehelper.generators.custom.MammothTreeGenerator;
 import net.darklikally.sk89q.minecraft.util.commands.Command;
 import net.darklikally.sk89q.minecraft.util.commands.CommandArgs;
 import net.darklikally.sk89q.minecraft.util.commands.CommandPermission;

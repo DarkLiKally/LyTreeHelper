@@ -29,7 +29,7 @@ import org.bukkit.entity.Player;
 
 import net.darklikally.bukkit.util.TargetBlock;
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
-import net.darklikally.lytreehelper.generators.ForestGenerators;
+import net.darklikally.lytreehelper.generators.ForestGenerator;
 import net.darklikally.lytreehelper.generators.TreeGenerator;
 import net.darklikally.lytreehelper.generators.TreeGenerator.TreeType;
 import net.darklikally.sk89q.minecraft.util.commands.Command;
@@ -139,7 +139,7 @@ public class ForestCommands {
 
         String typeName = args.getString(1);
         
-        ForestGenerators.generateForest(typeName, radius, density, loc, player.getWorld().getName(), plugin, player);
+        ForestGenerator.generateForest(typeName, radius, density, loc, player.getWorld().getName(), plugin, player);
     }
     
     /**

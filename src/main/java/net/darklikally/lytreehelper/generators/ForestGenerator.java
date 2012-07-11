@@ -31,7 +31,7 @@ import org.bukkit.util.Vector;
 import net.darklikally.lytreehelper.bukkit.LyTreeHelperPlugin;
 import net.darklikally.lytreehelper.generators.TreeGenerator.TreeType;
 
-public class ForestGenerators {
+public class ForestGenerator {
     /**
      * Generates a new forest at the given location with the specified parameters.
      * @param typeName

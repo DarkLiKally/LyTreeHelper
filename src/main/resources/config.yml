@@ -193,6 +193,11 @@ default-world-configuration:
             type: mcedit
             force-spawn: false
             spawn-on-block-types: [2,3]
+        murphys_oak:
+            biomes: [FOREST, SEASONAL_FOREST, PLAINS]
+            chance: 20.0
+            type: bo2
+            force-spawn: false
 
 # The version of the config file
 version: 1.0

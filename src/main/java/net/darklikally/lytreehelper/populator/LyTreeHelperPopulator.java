@@ -173,7 +173,6 @@ public class LyTreeHelperPopulator extends BlockPopulator {
                 e.printStackTrace();
             }
             
-            //TODO: Add offset to the cuboid object based on the schematicInfo and check the schematicInfo mcedit options
             if(schematicInfo.offset != null) {
                 object.setOffset(schematicInfo.offset);
             }

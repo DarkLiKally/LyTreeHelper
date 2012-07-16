@@ -314,6 +314,8 @@ public class WorldConfiguration {
                     continue;
                 }
                 
+                // TODO: Maybe, make the biomes option only for the MCEdit schematics, because bo2 files do have an entry for biomes
+                // TODO: but at the moment, we let the server admin choose, in which biomes they should spawn
                 Set<Biome> biomes = new HashSet<Biome>();
                 boolean allBiomes = false;
                 for(String biomeName : getStringList("schematics." + schematicName + ".biomes", new ArrayList<String>())) {

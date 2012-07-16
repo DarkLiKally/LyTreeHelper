@@ -52,10 +52,10 @@ public class ConfigurationManager {
             + "# must configure it to \"replace tabs with spaces.\" In Notepad++, this can\r\n"
             + "# be changed in Settings > Preferences > Language Menu.\r\n"
             + "# - Don't get rid of the indents. They are indented so some entries are\r\n"
-            + "# in categories (like \"enforce-single-session\" is in the \"protection\"\r\n"
+            + "# in categories (like \"max-tree-size\" is in the \"system\"\r\n"
             + "# category.\r\n"
-            + "# - If you want to check the format of this file before putting it\r\n"
-            + "# into WorldGuard, paste it into http://yaml-online-parser.appspot.com/\r\n"
+            + "# - If you want to check the format of this file,\r\n"
+            + "# paste it into http://yaml-online-parser.appspot.com/\r\n"
             + "# and see if it gives \"ERROR:\".\r\n"
             + "# - Lines starting with # are comments and so they are ignored.\r\n"
             + "#\r\n";
@@ -119,21 +119,22 @@ public class ConfigurationManager {
                 false);
         showCommandsInLog = config.getBoolean("system.show-commands-in-log",
                 false);
-        enableHighStackSize = config.getBoolean("system.enable-high-stack-size", false);
+        enableHighStackSize = config.getBoolean(
+                "system.enable-high-stack-size", false);
         maxTreeSize = config.getInt("system.max-tree-size", 1600);
         maxTreeRadius = config.getInt("system.max-tree-radius", 5);
         version = config.getString("version", "unknown");
-        
+
         // Adjust the maxTreeSize
-        if(enableHighStackSize && maxTreeSize > 6000) {
+        if (enableHighStackSize && maxTreeSize > 6000) {
             maxTreeSize = 6000;
         }
-        if(!enableHighStackSize && maxTreeSize > 1800) {
+        if (!enableHighStackSize && maxTreeSize > 1800) {
             maxTreeSize = 1800;
         }
-        
+
         // Print the system configuration if needed
-        if(showConfigOnStart) {
+        if (showConfigOnStart) {
             printConfigurationToConsole();
         }
 
@@ -175,11 +176,11 @@ public class ConfigurationManager {
 
         return config;
     }
-    
+
     public void printConfigurationToConsole() {
         Logger logger = plugin.getLogger();
         String lytree = "[LyTreeHelper] ";
-        
+
         logger.info(lytree + "Show commands in log: " + showCommandsInLog);
         logger.info(lytree + "Enable high stack size: " + enableHighStackSize);
         logger.info(lytree + "Max tree size: " + maxTreeSize);

@@ -15,8 +15,8 @@
 # - Don't get rid of the indents. They are indented so some entries are
 # in categories (like "max-tree-size" is in the "system"
 # category.
-# - If you want to check the format of this file before putting it
-# into WorldGuard, paste it into http://yaml-online-parser.appspot.com/
+# - If you want to check the format of this file,
+# paste it into http://yaml-online-parser.appspot.com/
 # and see if it gives "ERROR:".
 # - Lines starting with # are comments and so they are ignored.
 #
@@ -155,25 +155,44 @@ default-world-configuration:
     # or simply for all biomes ALL
     # The biome list is a string list which may match this examples:
     # [FOREST,RAINFOREST,SEASONAL_FOREST]   or   [BEACH]
+    #
+    # The option force-spawn defines whether the tree is forced to spawn, ignoring all blocks (override those)
+    #
     # The chances must be a double from 0.0 to 100.0
+    #
+    # You can use different types of schematics.
     # Possible type are:
     # mcedit   for .schematic files placed in the schematics folder
     # bo2      for .bo2 files placed in the bo2schematics folder
+    #
+    # In case of mcedit, you need to specify some more settings (bo2 files have it already included):
+    # offset                  The offset at which the tree should spawn (sub-options: x, y, z coordinates)
+    #                         If you don't define an offset, the object will be placed centered.
+    # spawn-on-block-types    The block types on which the tree can spawn (List like: [2,3]  or  [12])
+    #                         You can use -1 for all.
     schematics:
         SmallPalm:
             biomes: [BEACH]
             chance: 30.0
             type: mcedit
+            force-spawn: false
             offset:
                 x: -2
+                y: 0
+                z: -2
+            spawn-on-block-types: [12]
         TallPalm:
             biomes: [BEACH]
             chance: 10.0
             type: mcedit
+            force-spwan: false
+            spawn-on-block-types: [12]
         TallBirch:
             biomes: [FOREST, SEASONAL_FOREST]
             chance: 5.0
             type: mcedit
+            force-spawn: false
+            spawn-on-block-types: [2,3]
 
 # The version of the config file
 version: 1.0

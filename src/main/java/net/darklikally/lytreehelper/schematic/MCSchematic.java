@@ -38,9 +38,14 @@ public abstract class MCSchematic {
     private static final Map<String, MCSchematic> schematicFormats = new HashMap<String, MCSchematic>();
 
     private final String name;
+    
+    // Build-In supported schematic formats
+    public static final MCSchematic SCHEMATIC_MCEDIT = new MCEditSchematic();
+    public static final MCSchematic SCHEMATIC_BO2 = new Bo2Schematic();
 
     protected MCSchematic(String name) {
         this.name = name;
+        schematicFormats.put(name, this);
     }
 
     public static Set<MCSchematic> getAllFormats() {

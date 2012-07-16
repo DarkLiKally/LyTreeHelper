@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
+import org.bukkit.util.Vector;
 
 import net.darklikally.lytreehelper.schematic.SchematicInformation;
 import net.darklikally.sk89q.util.yaml.YAMLFormat;
@@ -99,7 +100,7 @@ public class WorldConfiguration {
      * Construct the object.
      * 
      * @param plugin
-     *            The WorldGuardPlugin instance
+     *            The LyTreeHelper instance
      * @param worldName
      *            The world name that this WorldConfiguration is for.
      * @param parentConfig
@@ -144,7 +145,6 @@ public class WorldConfiguration {
         }
     }
 
-    @SuppressWarnings("unused")
     private int getInt(String node, int def) {
         int val = parentConfig.getInt(node, def);
 
@@ -316,7 +316,7 @@ public class WorldConfiguration {
                 
                 Set<Biome> biomes = new HashSet<Biome>();
                 boolean allBiomes = false;
-                for(String biomeName : getStringList("schematics." + schematicName + ".biomes", null)) {
+                for(String biomeName : getStringList("schematics." + schematicName + ".biomes", new ArrayList<String>())) {
                     // If we have ALL in the biome list, we can ignore the other items
                     if(biomeName.toUpperCase() == "ALL") {
                         biomes = null;
@@ -332,6 +332,43 @@ public class WorldConfiguration {
                     }
                 }
                 
+                boolean forceSpawn = getBoolean("schematics." + schematicName + ".force-spawn", false);
+                
+                Vector offset = null;
+                if(schematicType == "mcedit") {
+                    if(getKeys("schematics." + schematicName + ".offset") != null
+                            && getKeys("schematics." + schematicName + ".offset").size() != 0) {
+                        offset = new Vector(
+                                getInt("schematics." + schematicName + ".offset.x", 0),
+                                getInt("schematics." + schematicName + ".offset.y", 0),
+                                getInt("schematics." + schematicName + ".offset.z", 0)
+                                );
+                    }
+                }
+                
+                
+                Set<Integer> spawnOnBlockTypes = new HashSet<Integer>();
+                boolean allBlockTypes = false;
+                if(schematicType == "mcedit") {
+                    for(int blockType : getIntList("schematics." + schematicName + ".spawn-on-block-types", new ArrayList<Integer>())) {
+                        // If we have -1 in the block types list, we can ignore the other items
+                        if(blockType == -1) {
+                            spawnOnBlockTypes = null;
+                            allBlockTypes = true;
+                            break;
+                        }
+                        
+                        spawnOnBlockTypes.add(blockType);
+                    }
+                } else {
+                    spawnOnBlockTypes = null;
+                }
+                
+                if(!allBlockTypes && spawnOnBlockTypes.size() == 0) {
+                    // The object can't spawn on any block... we don't need it in the memory, so drop it
+                    continue;
+                }
+                
                 // Finally we have our schematic information complete, so create a new SchematicInformation
                 // and add it to the schematics collection of the world
                 SchematicInformation schematicInfo = new SchematicInformation();
@@ -341,6 +378,10 @@ public class WorldConfiguration {
                 schematicInfo.allBiomes = allBiomes;
                 schematicInfo.chance = getDouble("schematics." + schematicName + ".chance", 10.0);
                 schematicInfo.type = schematicType;
+                schematicInfo.forceSpawn = forceSpawn;
+                schematicInfo.offset = offset;
+                schematicInfo.spawnOnBlockTypes = spawnOnBlockTypes;
+                schematicInfo.allBlockTypes = allBlockTypes;
                 schematicInfo.file = fileName;
                 
                 schematics.add(schematicInfo);

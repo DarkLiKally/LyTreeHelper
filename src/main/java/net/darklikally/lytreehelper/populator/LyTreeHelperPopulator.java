@@ -146,7 +146,7 @@ public class LyTreeHelperPopulator extends BlockPopulator {
         Biome biome = block.getBiome();
         Material blockType = block.getType();
         
-        SchematicInformation schematicInfo = selectSchematic(wconfig);
+        SchematicInformation schematicInfo = selectSchematic(wconfig, block);
         
         if(schematicInfo == null) {
             // We have no schematic selected
@@ -165,7 +165,6 @@ public class LyTreeHelperPopulator extends BlockPopulator {
         CuboidObject object = null;
         Bo2Object bo2Object = null;
         if(schematicInfo.type.equalsIgnoreCase("mcedit")) {
-            
             try {
                 object = MCSchematic.getFormat("mcedit").load(schematicFile);
             } catch (IOException e) {
@@ -174,9 +173,21 @@ public class LyTreeHelperPopulator extends BlockPopulator {
                 e.printStackTrace();
             }
             
+            //TODO: Add offset to the cuboid object based on the schematicInfo and check the schematicInfo mcedit options
+            if(schematicInfo.offset != null) {
+                object.setOffset(schematicInfo.offset);
+            }
+            
+            if(!schematicInfo.allBlockTypes) {
+                if(schematicInfo.spawnOnBlockTypes.size() != 0
+                        && !schematicInfo.spawnOnBlockTypes.contains(block.getTypeId())) {
+                    return;
+                }
+            }
+            
         } else if(schematicInfo.type.equalsIgnoreCase("bo2")) {
             bo2Object = Bo2Manager.getObjectFromFile(schematicFile);
-            
+
             if(!bo2Object.isTree()) {
                 // Our object isn't a tree, but we have a tree/forest plugin...
                 
@@ -242,18 +253,23 @@ public class LyTreeHelperPopulator extends BlockPopulator {
                 block.getZ() + object.getLength() - offset.getBlockZ()
                 );
         
-        for(int x = minBlock.getBlockX(); x <= maxBlock.getBlockX(); x++) {
-            for(int y = minBlock.getBlockY() + 1; y <= maxBlock.getBlockY(); y++) {
-                for(int z = minBlock.getBlockZ(); z <= maxBlock.getBlockZ(); z++) {
-                    Block cBlock = world.getBlockAt(new Location(world, x, y, z));
-                    
-                    if(!blocksToIgnore.contains(cBlock.getType())) {
-                        // We have not enough space for our object
-                        if(schematicInfo.type.equalsIgnoreCase("bo2")) {
-                            // A bo2 object, so check if it can dig into the ground
-                            if(!bo2Object.canDig() && y < block.getY());
+        if(!schematicInfo.forceSpawn) {
+            // If we won't force the object to spawn, check if we have enough space for it
+            for(int x = minBlock.getBlockX(); x <= maxBlock.getBlockX(); x++) {
+                for(int y = minBlock.getBlockY() + 1; y <= maxBlock.getBlockY(); y++) {
+                    for(int z = minBlock.getBlockZ(); z <= maxBlock.getBlockZ(); z++) {
+                        Block cBlock = world.getBlockAt(new Location(world, x, y, z));
+                        
+                        if(!blocksToIgnore.contains(cBlock.getType())) {
+                            // We have not enough space for our object
+                            if(schematicInfo.type.equalsIgnoreCase("bo2")) {
+                                // A bo2 object, so check if it can dig into the ground
+                                if(!bo2Object.canDig() && y < block.getY()) {
+                                    continue;
+                                }
+                            }
+                            return;
                         }
-                        return;
                     }
                 }
             }
@@ -272,16 +288,18 @@ public class LyTreeHelperPopulator extends BlockPopulator {
         object.place(block.getRelative(BlockFace.UP).getLocation(), true);
     }
 
-    private SchematicInformation selectSchematic(WorldConfiguration wconfig) {
+    private SchematicInformation selectSchematic(WorldConfiguration wconfig, Block block) {
         if (wconfig.schematics != null && wconfig.schematics.size() != 0) {
             Random rand = new Random();
 
             SchematicInformation[] schematics = wconfig.schematics.toArray(new SchematicInformation[1]);
             for(int i = 0; i < schematics.length; i++) {
-                SchematicInformation schematicInfo = schematics[i];                
+                SchematicInformation schematicInfo = schematics[i];
                 
-                if (rand.nextDouble() * 100 <= schematicInfo.chance) {
-                    return schematicInfo;
+                if(schematicInfo.biomes.contains(block.getBiome())) {
+                    if (rand.nextDouble() * 100 <= schematicInfo.chance) {
+                        return schematicInfo;
+                    }
                 }
             }
         }

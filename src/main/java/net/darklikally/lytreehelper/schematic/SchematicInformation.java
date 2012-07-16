@@ -21,6 +21,7 @@ package net.darklikally.lytreehelper.schematic;
 import java.util.Set;
 
 import org.bukkit.block.Biome;
+import org.bukkit.util.Vector;
 
 /**
  * 
@@ -33,5 +34,9 @@ public class SchematicInformation {
     public boolean allBiomes;
     public double chance;
     public String type;
+    public boolean forceSpawn;
+    public Vector offset;
+    public Set<Integer> spawnOnBlockTypes;
+    public boolean allBlockTypes;
     public String file;
 }
